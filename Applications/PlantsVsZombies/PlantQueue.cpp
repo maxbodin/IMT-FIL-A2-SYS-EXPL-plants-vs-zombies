@@ -17,6 +17,13 @@
 #include <Applications/PlantsVsZombies/KernelPult.h>
 #include <Applications/PlantsVsZombies/Marigold.h>
 #include <Applications/PlantsVsZombies/MelonPult.h>
+#include <Applications/PlantsVsZombies/Repeater.h>
+#include <Applications/PlantsVsZombies/SplitPea.h>
+#include <Applications/PlantsVsZombies/Squash.h>
+#include <Applications/PlantsVsZombies/Threepeater.h>
+#include <Applications/PlantsVsZombies/Torchwood.h>
+#include <Applications/PlantsVsZombies/TwinSunflower.h>
+#include <Applications/PlantsVsZombies/WinterMelon.h>
 #include <sextant/interruptions/irq.h>
 
 extern volatile int compt;
@@ -184,6 +191,13 @@ int PlantQueue::costOf(PlantType type) {
         case PLANT_KERNELPULT:      return KernelPult::COST;
         case PLANT_MARIGOLD:        return Marigold::COST;
         case PLANT_MELONPULT:       return MelonPult::COST;
+        case PLANT_REPEATER:       return Repeater::COST;
+        case PLANT_SPLITPEA:       return SplitPea::COST;
+        case PLANT_SQUASH:         return Squash::COST;
+        case PLANT_THREEPEATER:    return Threepeater::COST;
+        case PLANT_TORCHWOOD:      return Torchwood::COST;
+        case PLANT_TWINSUNFLOWER:  return TwinSunflower::COST;
+        case PLANT_WINTERMELON:    return WinterMelon::COST;
         case PLANT_PEASHOOTER:
         default:                    return Peashooter::COST;
     }

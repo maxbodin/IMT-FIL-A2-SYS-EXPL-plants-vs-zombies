@@ -3,7 +3,7 @@
 
 #define MARIGOLD_WIDTH  26
 #define MARIGOLD_HEIGHT 32
-#define MARIGOLD_FRAMES 9
+#define MARIGOLD_FRAMES 5
 
 extern unsigned char marigold_frames[MARIGOLD_FRAMES][MARIGOLD_WIDTH*MARIGOLD_HEIGHT];
 

@@ -9,6 +9,9 @@ public:
     static const int HIT_DELAY = 150; // ticks entre chaque coup
     static const int BASE_ANIM_SPEED = 10; // base ticks between frames
     static const int MIN_ANIM_SPEED  = 4;  // fastest allowed
+    static const int WALK_STEP       = 5;  // pixels moved per walk frame
+    static const int FIRE_TICK_INTERVAL = 100; // ticks between fire damage
+    static const int FIRE_ANIM_SPEED = 8;  // ticks between fire sprite frames
 
     Zombie(int x, int y, int speedBonus = 0);
     Zombie(int x, int y, int customHp, int speedBonus);

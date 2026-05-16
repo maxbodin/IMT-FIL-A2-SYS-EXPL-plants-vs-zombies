@@ -6,6 +6,22 @@
 #include <Applications/PlantsVsZombies/WallNut.h>
 #include <Applications/PlantsVsZombies/Chomper.h>
 #include <Applications/PlantsVsZombies/GatlingPea.h>
+#include <Applications/PlantsVsZombies/Blover.h>
+#include <Applications/PlantsVsZombies/CabbagePult.h>
+#include <Applications/PlantsVsZombies/CactusPlant.h>
+#include <Applications/PlantsVsZombies/CherryBomb.h>
+#include <Applications/PlantsVsZombies/CobCannon.h>
+#include <Applications/PlantsVsZombies/Garlic.h>
+#include <Applications/PlantsVsZombies/KernelPult.h>
+#include <Applications/PlantsVsZombies/Marigold.h>
+#include <Applications/PlantsVsZombies/MelonPult.h>
+#include <Applications/PlantsVsZombies/Repeater.h>
+#include <Applications/PlantsVsZombies/SplitPea.h>
+#include <Applications/PlantsVsZombies/Squash.h>
+#include <Applications/PlantsVsZombies/Threepeater.h>
+#include <Applications/PlantsVsZombies/Torchwood.h>
+#include <Applications/PlantsVsZombies/TwinSunflower.h>
+#include <Applications/PlantsVsZombies/WinterMelon.h>
 #include <Applications/PlantsVsZombies/sprites/shared_palette.h>
 #include <Applications/PlantsVsZombies/sprites/plants/peashooter_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/snow_peashooter_sprite.h>
@@ -15,6 +31,22 @@
 #include <Applications/PlantsVsZombies/sprites/plants/wallnut_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/chomper_idle_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/gatlingpea_idle_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/blover_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cabbagepult_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cactus_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/garlic_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/kernelpult_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/marigold_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/melonpult_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/reapeater_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/splitpea_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/squash_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/threepeater_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/torchwood_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/twinsunflower_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/wintermelon_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/objects/sun_small_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/background_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/game_over_sprite.h>
@@ -92,15 +124,15 @@ void PlantsVsZombies::drawSunHud() {
     const int px = 120, py = 1, pw = 80, ph = 20;
     for (int row = 0; row < ph; row++)
         for (int col = 0; col < pw; col++)
-            video[(py + row) * 320 + (px + col)] = SUN_HUD_BG;
+            video[(py + row) * SCREEN_WIDTH + (px + col)] = SUN_HUD_BG;
 
     bool sunFlash = compt < sunFlashEndTick;
     unsigned char sunColor    = sunFlash ? SUN_HUD_RED : SUN_HUD_TEXT;
     unsigned char borderColor = sunFlash ? SUN_HUD_RED : (unsigned char)3;
 
     for (int col = 0; col < pw; col++) {
-        video[py * 320 + (px + col)]            = borderColor;
-        video[(py + ph - 1) * 320 + (px + col)] = borderColor;
+        video[py * SCREEN_WIDTH + (px + col)]            = borderColor;
+        video[(py + ph - 1) * SCREEN_WIDTH + (px + col)] = borderColor;
     }
 
     // Icône soleil animée (sun_small, 2 frames)
@@ -148,7 +180,7 @@ PlantsVsZombies::PlantsVsZombies() : plantCount(0), zombieCount(0) {
 void PlantsVsZombies::init(Ecran* e, Clavier* c) {
     ecran   = e;
     clavier = c;
-    backbuffer = (unsigned char*) getmem(320 * 200);
+    backbuffer = (unsigned char*) getmem(SCREEN_WIDTH * SCREEN_HEIGHT);
     set_vga_mode13();
     set_palette_vga(shared_palette);
     clear_vga_screen(0);
@@ -183,6 +215,25 @@ void PlantsVsZombies::updateLogic() {
         sunGainDisplayEnd = compt + SUN_DISPLAY_DURATION;
     }
 
+    // --- Cactus: detect zombies in same row to trigger growing ---
+    for (int p = 0; p < plantCount; p++) {
+        if (plants[p]->getPlantType() != PLANT_CACTUS) continue;
+        CactusPlant* cactus = (CactusPlant*)plants[p];
+        int pCol, pRow;
+        if (!grid.pixelToTile(plants[p]->getX(), plants[p]->getY(), pCol, pRow))
+            continue;
+        for (int z = 0; z < zombieCount; z++) {
+            int zFootY = zombies[z]->getY() + zombies[z]->getHeight();
+            int zCol, zRow;
+            if (!grid.pixelToTile(zombies[z]->getX(), zFootY - 1, zCol, zRow))
+                continue;
+            if (zRow == pRow) {
+                cactus->setZombieInRange(true);
+                break;
+            }
+        }
+    }
+
     // --- Plants: update + spawn bullets/suns + remove dead ---
     for (int i = 0; i < plantCount; i++) {
         plants[i]->update();
@@ -201,16 +252,50 @@ void PlantsVsZombies::updateLogic() {
 
         if (plants[i]->hasSunReady() && sunOnGroundCount < MAX_SUNS) {
             suns_on_ground[sunOnGroundCount++] = new Sun(plants[i]->getX(), plants[i]->getY() + plants[i]->getHeight() / 2);
+            if (plants[i]->getPlantType() == PLANT_TWINSUNFLOWER && sunOnGroundCount < MAX_SUNS) {
+                suns_on_ground[sunOnGroundCount++] = new Sun(plants[i]->getX() + 10, plants[i]->getY() + plants[i]->getHeight() / 2 + 5);
+            }
             plants[i]->resetSunTimer();
         }
 
         if (plants[i]->canShoot()) {
             int bx = plants[i]->getX();
             int by = plants[i]->getY() - plants[i]->getHeight() / 4;
-            Bullet* b = bulletPool.acquire();
-            if (b) {
-                b->init(bx, by, plants[i]->getBulletType());
+
+            if (plants[i]->getPlantType() == PLANT_THREEPEATER) {
+                int pc, pr;
+                if (grid.pixelToTile(plants[i]->getX(), plants[i]->getY(), pc, pr)) {
+                    for (int lane = -1; lane <= 1; lane++) {
+                        int row = pr + lane;
+                        if (row < 0 || row >= Grid::ROWS) continue;
+                        int laneY;
+                        int dummyX;
+                        grid.tileToPixel(pc, row, dummyX, laneY);
+                        laneY -= Grid::TILE_SIZE / 4;
+                        Bullet* b = bulletPool.acquire();
+                        if (b) {
+                            b->init(bx, laneY, plants[i]->getBulletType());
+                        }
+                    }
+                    plants[i]->resetCooldown();
+                }
+            } else if (plants[i]->getPlantType() == PLANT_SPLITPEA) {
+                Bullet* b = bulletPool.acquire();
+                if (b) {
+                    b->init(bx, by, plants[i]->getBulletType());
+                }
+                Bullet* b2 = bulletPool.acquire();
+                if (b2) {
+                    b2->init(bx, by, plants[i]->getBulletType());
+                    b2->setDirection(-1);
+                }
                 plants[i]->resetCooldown();
+            } else {
+                Bullet* b = bulletPool.acquire();
+                if (b) {
+                    b->init(bx, by, plants[i]->getBulletType());
+                    plants[i]->resetCooldown();
+                }
             }
         }
     }
@@ -219,7 +304,7 @@ void PlantsVsZombies::updateLogic() {
     for (int p = 0; p < plantCount; p++) {
         if (plants[p]->getPlantType() != PLANT_POTATO_MINE) continue;
         PotatoMine* pm = (PotatoMine*)plants[p];
-        if (pm->isExploding()) continue;
+        if (pm->isExploding() || !pm->isArmed()) continue;
 
         int mineTileCol, mineTileRow;
         if (!grid.pixelToTile(plants[p]->getX(), plants[p]->getY(), mineTileCol, mineTileRow))
@@ -248,11 +333,158 @@ void PlantsVsZombies::updateLogic() {
                         zombies[z2]->takeDamage(pm->getExplosionDamage());
                         DmgIndicator* di = dmgPool.acquire();
                         if (di) di->init(zombies[z2]->getX(),
-                                         zombies[z2]->getY() - 4,
+                                         zombies[z2]->getY() - DMG_INDICATOR_Y_OFFSET,
                                          pm->getExplosionDamage(), DMG_INDICATOR_DURATION);
                     }
                 }
                 break; // mine already triggered
+            }
+        }
+    }
+
+    // --- Cherry bombs: tile-based AoE explosion ---
+    for (int p = 0; p < plantCount; p++) {
+        if (plants[p]->getPlantType() != PLANT_CHERRYBOMB) continue;
+        CherryBomb* cb = (CherryBomb*)plants[p];
+        if (cb->isExploding() || cb->isAttacking()) continue;
+
+        int cbCol, cbRow;
+        if (!grid.pixelToTile(plants[p]->getX(), plants[p]->getY(), cbCol, cbRow))
+            continue;
+
+        for (int i = 0; i < zombieCount; i++) {
+            int zCenterX = zombies[i]->getX() + zombies[i]->getWidth() / 2;
+            int zFootY   = zombies[i]->getY() + zombies[i]->getHeight();
+            int zcol, zrow;
+            if (!grid.pixelToTile(zCenterX, zFootY - 1, zcol, zrow)) continue;
+            int dc = zcol - cbCol; if (dc < 0) dc = -dc;
+            int dr = zrow - cbRow; if (dr < 0) dr = -dr;
+            if (dc <= 1 && dr <= 1) {
+                cb->explode();
+                // Damage all zombies in 3x3 area
+                for (int z2 = 0; z2 < zombieCount; z2++) {
+                    int z2cx = zombies[z2]->getX() + zombies[z2]->getWidth() / 2;
+                    int z2fy = zombies[z2]->getY() + zombies[z2]->getHeight();
+                    int z2col, z2row;
+                    if (!grid.pixelToTile(z2cx, z2fy - 1, z2col, z2row)) continue;
+                    int d2c = z2col - cbCol; if (d2c < 0) d2c = -d2c;
+                    int d2r = z2row - cbRow; if (d2r < 0) d2r = -d2r;
+                    if (d2c <= 1 && d2r <= 1) {
+                        zombies[z2]->takeDamage(cb->getExplosionDamage());
+                        DmgIndicator* di = dmgPool.acquire();
+                        if (di) di->init(zombies[z2]->getX(),
+                                         zombies[z2]->getY() - DMG_INDICATOR_Y_OFFSET,
+                                         cb->getExplosionDamage(), DMG_INDICATOR_DURATION);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    // --- Squash: jump on nearest zombie in same lane ---
+    for (int p = 0; p < plantCount; p++) {
+        if (plants[p]->getPlantType() != PLANT_SQUASH) continue;
+        Squash* sq = (Squash*)plants[p];
+        if (sq->isJumping() || sq->hasLanded()) {
+            if (sq->hasLanded()) {
+                for (int z = 0; z < zombieCount; z++) {
+                    int dx = zombies[z]->getX() - sq->getX();
+                    int dy = zombies[z]->getY() - sq->getY();
+                    if (dx < 0) dx = -dx;
+                    if (dy < 0) dy = -dy;
+                    if (dx < Grid::TILE_SIZE && dy < Grid::TILE_SIZE) {
+                        zombies[z]->takeDamage(Squash::SQUASH_DAMAGE);
+                        DmgIndicator* di = dmgPool.acquire();
+                        if (di) di->init(zombies[z]->getX(),
+                                         zombies[z]->getY() - DMG_INDICATOR_Y_OFFSET,
+                                         Squash::SQUASH_DAMAGE, DMG_INDICATOR_DURATION);
+                    }
+                }
+            }
+            continue;
+        }
+        int sqCol, sqRow;
+        if (!grid.pixelToTile(sq->getX(), sq->getY(), sqCol, sqRow)) continue;
+        int bestDist = 99999;
+        int bestZ = -1;
+        for (int z = 0; z < zombieCount; z++) {
+            int zCenterX = zombies[z]->getX() + zombies[z]->getWidth() / 2;
+            int zFootY = zombies[z]->getY() + zombies[z]->getHeight();
+            int zcol, zrow;
+            if (!grid.pixelToTile(zCenterX, zFootY - 1, zcol, zrow)) continue;
+            if (zrow != sqRow) continue;
+            int dist = zCenterX - sq->getX();
+            if (dist > 0 && dist < bestDist) {
+                bestDist = dist;
+                bestZ = z;
+            }
+        }
+        if (bestZ >= 0 && bestDist < 5 * Grid::TILE_SIZE) {
+            sq->setTarget(zombies[bestZ]->getX(), zombies[bestZ]->getY());
+        }
+    }
+
+    // --- Torchwood: turn pea bullets passing through into fire peas ---
+    for (int p = 0; p < plantCount; p++) {
+        if (plants[p]->getPlantType() != PLANT_TORCHWOOD) continue;
+        Torchwood* tw = (Torchwood*)plants[p];
+        int twX = plants[p]->getX();
+        int twY = plants[p]->getY();
+        int twW = plants[p]->getWidth();
+        int twH = plants[p]->getHeight();
+        for (int bi = 0; bi < bulletPool.CAPACITY; bi++) {
+            Bullet* b = bulletPool.get(bi);
+            if (!b->isActive() || b->isImpacting()) continue;
+            if (b->getDirection() < 0) continue;
+            if (b->getType() != BULLET_PEASHOOTER) continue;
+            int bx = b->getX();
+            int by = b->getY();
+            if (bx >= twX && bx <= twX + twW &&
+                by + b->getHeight() >= twY && by <= twY + twH) {
+                b->igniteByTorchwood();
+                tw->ignite();
+            }
+        }
+    }
+
+    // --- Blover: blow away all zombies on the field ---
+    for (int p = 0; p < plantCount; p++) {
+        if (plants[p]->getPlantType() != PLANT_BLOVER) continue;
+        Blover* bl = (Blover*)plants[p];
+        if (!bl->isBlowing()) continue;
+
+        for (int i = 0; i < zombieCount; i++) {
+            // Push zombies to the right off-screen
+            int zx = zombies[i]->getX();
+            if (zx < SCREEN_WIDTH) {
+                zombies[i]->takeDamage(Blover::WIND_DAMAGE); // wind damage per tick
+            }
+        }
+    }
+
+    // --- Garlic: redirect zombies to adjacent lanes on contact ---
+    for (int p = 0; p < plantCount; p++) {
+        if (plants[p]->getPlantType() != PLANT_GARLIC) continue;
+        int gx = plants[p]->getX();
+        int gy = plants[p]->getY();
+        int gw = plants[p]->getWidth();
+
+        for (int i = 0; i < zombieCount; i++) {
+            if (!zombies[i]->canBeBlocked()) continue;
+            int dx = zombies[i]->getX() - (gx + gw);
+            int dy = zombies[i]->getY() - gy;
+            if (dy < 0) dy = -dy;
+            if (dx >= 0 && dx < COLLISION_DISTANCE && dy < Grid::TILE_SIZE) {
+                // Move zombie to adjacent lane (alternate up/down)
+                int zy = zombies[i]->getY();
+                int lane = (zy + zombies[i]->getHeight() - Grid::OFFSET_Y) / Grid::TILE_SIZE;
+                int newLane = (lane > 0) ? lane - 1 : lane + 1;
+                if (newLane >= Grid::ROWS) newLane = Grid::ROWS - 1;
+                int newY = Grid::OFFSET_Y + newLane * Grid::TILE_SIZE
+                         + Grid::TILE_SIZE / 2 - zombies[i]->getHeight();
+                zombies[i]->setPosition(zombies[i]->getX() + Garlic::PUSH_OFFSET, newY);
+                plants[p]->takeDamage(Garlic::BITE_DAMAGE); // garlic takes bite damage
             }
         }
     }
@@ -291,11 +523,11 @@ void PlantsVsZombies::updateLogic() {
                     Chomper* ch = (Chomper*)plants[p];
                     if (ch->getChomperState() == CHOMP_IDLE) {
                         ch->startAttack();
-                        zombies[i]->takeDamage(9999); // instant kill
+                        zombies[i]->takeDamage(Chomper::CHOMP_DAMAGE); // instant kill
                         DmgIndicator* di = dmgPool.acquire();
                         if (di) di->init(zombies[i]->getX(),
-                                         zombies[i]->getY() - 4,
-                                         9999, DMG_INDICATOR_DURATION);
+                                         zombies[i]->getY() - DMG_INDICATOR_Y_OFFSET,
+                                         Chomper::CHOMP_DAMAGE, DMG_INDICATOR_DURATION);
                     }
                     /* Chomper doesn't block while chewing — vulnerable */
                     if (ch->isChewing()) blocked = false;
@@ -361,7 +593,9 @@ void PlantsVsZombies::updateLogic() {
 
         if (b->isImpacting()) continue;
 
-        if (b->getX() > b->getSpawnX() + COLLISION_DISTANCE) {
+        int travelDist = b->getX() - b->getSpawnX();
+        if (travelDist < 0) travelDist = -travelDist;
+        if (travelDist > COLLISION_DISTANCE) {
             for (int z = 0; z < zombieCount; z++) {
                 if (aabb(b->getX(),  b->getY(),
                          b->getWidth(), b->getHeight(),
@@ -373,7 +607,7 @@ void PlantsVsZombies::updateLogic() {
                     /* Damage indicator via pool */
                     DmgIndicator* di = dmgPool.acquire();
                     if (di) di->init(zombies[z]->getX(),
-                                     zombies[z]->getY() - 4,
+                                     zombies[z]->getY() - DMG_INDICATOR_Y_OFFSET,
                                      dmg, DMG_INDICATOR_DURATION);
                     break;
                 }
@@ -419,11 +653,11 @@ void PlantsVsZombies::renderFrame() {
 
     if (gameOver) {
         // Clear to black
-        for (int i = 0; i < 320 * 200; i++)
+        for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++)
             backbuffer[i] = 0;
 
         // Draw game over sprite centered
-        int imgX = (320 - GAME_OVER_WIDTH) / 2;
+        int imgX = (SCREEN_WIDTH - GAME_OVER_WIDTH) / 2;
         int imgY = 4;
         draw_sprite(game_over_sprite_data, GAME_OVER_WIDTH, GAME_OVER_HEIGHT, imgX, imgY);
 
@@ -432,18 +666,18 @@ void PlantsVsZombies::renderFrame() {
 
         int len = 0, tmp = lastSeconds;
         if (tmp == 0) len = 1; else { while (tmp > 0) { len++; tmp /= 10; } }
-        int sx = (320 - (len + 1) * 8) / 2;
+        int sx = (SCREEN_WIDTH - (len + 1) * 8) / 2;
         draw_number(lastSeconds, sx, statsY, 15, 2);
         draw_text("s", sx + len * 8, statsY, 15, 2);
 
         draw_text("wave", 134, statsY + 14, 15, 2);
         draw_number(waveManager.getWave(), 134 + 4 * 8, statsY + 14, 15, 2);
 
-        int restartX = (320 - 22 * 4) / 2;
+        int restartX = (SCREEN_WIDTH - 22 * 4) / 2;
         draw_text("press space to restart", restartX, statsY + 30, 15, 1);
     } else {
         // Normal game rendering
-        for (int i = 0; i < 320 * 200; i++)
+        for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++)
             backbuffer[i] = background_sprite_data[i];
 
         grid.render();
@@ -480,7 +714,7 @@ void PlantsVsZombies::renderFrame() {
         int len = 0, tmp = lastFps;
         if (tmp == 0) len = 1; else while (tmp > 0) { len++; tmp /= 10; }
         int totalW = (len + 3) * 4;
-        int startX = 319 - totalW;
+        int startX = SCREEN_WIDTH - 1 - totalW;
         draw_number(lastFps, startX, 2, 15, 1);
         draw_text("fps", startX + len * 4, 2, 15, 1);
     }
@@ -513,7 +747,7 @@ void PlantsVsZombies::renderFrame() {
 
     unsigned char* src = backbuffer;
     unsigned char* dst = real_video;
-    for (int i = 0; i < 320 * 200; i++) dst[i] = src[i];
+    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) dst[i] = src[i];
     video = real_video;
 }
 
@@ -533,7 +767,7 @@ void PlantsVsZombies::drawLivesHud() {
     const int heartW = 5 * scale;
     const int gap    = 3;
     const int totalW = 3 * heartW + 2 * gap;
-    const int startX = 320 - totalW - 1;
+    const int startX = SCREEN_WIDTH - totalW - 1;
     const int startY = 16;
 
     for (int i = 0; i < 3; i++) {
@@ -732,7 +966,7 @@ bool PlantsVsZombies::placePlant(int col, int row, PlantType type) {
     int px, py;
     grid.tileToPixel(col, row, px, py);
 
-    Peashooter* p = 0;
+    Plant* p = 0;
 
     switch (type) {
         case PLANT_SNOW_PEASHOOTER:
@@ -755,6 +989,54 @@ bool PlantsVsZombies::placePlant(int col, int row, PlantType type) {
             break;
         case PLANT_GATLING_PEA:
             p = new GatlingPea(px, py);
+            break;
+        case PLANT_BLOVER:
+            p = new Blover(px, py);
+            break;
+        case PLANT_CABBAGEPULT:
+            p = new CabbagePult(px, py);
+            break;
+        case PLANT_CACTUS:
+            p = new CactusPlant(px, py);
+            break;
+        case PLANT_CHERRYBOMB:
+            p = new CherryBomb(px, py);
+            break;
+        case PLANT_COBCANNON:
+            p = new CobCannon(px, py);
+            break;
+        case PLANT_GARLIC:
+            p = new Garlic(px, py);
+            break;
+        case PLANT_KERNELPULT:
+            p = new KernelPult(px, py);
+            break;
+        case PLANT_MARIGOLD:
+            p = new Marigold(px, py);
+            break;
+        case PLANT_MELONPULT:
+            p = new MelonPult(px, py);
+            break;
+        case PLANT_REPEATER:
+            p = new Repeater(px, py);
+            break;
+        case PLANT_SPLITPEA:
+            p = new SplitPea(px, py);
+            break;
+        case PLANT_SQUASH:
+            p = new Squash(px, py);
+            break;
+        case PLANT_THREEPEATER:
+            p = new Threepeater(px, py);
+            break;
+        case PLANT_TORCHWOOD:
+            p = new Torchwood(px, py);
+            break;
+        case PLANT_TWINSUNFLOWER:
+            p = new TwinSunflower(px, py);
+            break;
+        case PLANT_WINTERMELON:
+            p = new WinterMelon(px, py);
             break;
         case PLANT_PEASHOOTER:
         default:
@@ -781,12 +1063,12 @@ void PlantsVsZombies::drawCursor(int col, int row, unsigned char color) {
     grid.tileToPixel(col, row, px, py);
     int w = Grid::TILE_SIZE, h = Grid::TILE_SIZE;
     for (int x = px; x < px + w; x++) {
-        video[py * 320 + x]           = color;
-        video[(py + h - 1) * 320 + x] = color;
+        video[py * SCREEN_WIDTH + x]           = color;
+        video[(py + h - 1) * SCREEN_WIDTH + x] = color;
     }
     for (int y = py; y < py + h; y++) {
-        video[y * 320 + px]           = color;
-        video[y * 320 + (px + w - 1)] = color;
+        video[y * SCREEN_WIDTH + px]           = color;
+        video[y * SCREEN_WIDTH + (px + w - 1)] = color;
     }
 }
 
@@ -821,6 +1103,70 @@ static const unsigned char* spriteForPlant(PlantType type, int& w, int& h) {
             w = GATLINGPEA_IDLE_WIDTH;
             h = GATLINGPEA_IDLE_HEIGHT;
             return gatlingpea_idle_frames[0];
+        case PLANT_BLOVER:
+            w = BLOVER_WIDTH;
+            h = BLOVER_HEIGHT;
+            return blover_frames[0];
+        case PLANT_CABBAGEPULT:
+            w = CABBAGEPULT_WIDTH;
+            h = CABBAGEPULT_HEIGHT;
+            return cabbagepult_frames[0];
+        case PLANT_CACTUS:
+            w = CACTUS_WIDTH;
+            h = CACTUS_HEIGHT;
+            return cactus_frames[0];
+        case PLANT_CHERRYBOMB:
+            w = CHERRYBOMB_WIDTH;
+            h = CHERRYBOMB_HEIGHT;
+            return cherrybomb_frames[0];
+        case PLANT_COBCANNON:
+            w = COBCANNON_WIDTH;
+            h = COBCANNON_HEIGHT;
+            return cobcannon_frames[0];
+        case PLANT_GARLIC:
+            w = GARLIC_WIDTH;
+            h = GARLIC_HEIGHT;
+            return garlic_frames[0];
+        case PLANT_KERNELPULT:
+            w = KERNELPULT_WIDTH;
+            h = KERNELPULT_HEIGHT;
+            return kernelpult_frames[0];
+        case PLANT_MARIGOLD:
+            w = MARIGOLD_WIDTH;
+            h = MARIGOLD_HEIGHT;
+            return marigold_frames[0];
+        case PLANT_MELONPULT:
+            w = MELONPULT_WIDTH;
+            h = MELONPULT_HEIGHT;
+            return melonpult_frames[0];
+        case PLANT_REPEATER:
+            w = REAPEATER_WIDTH;
+            h = REAPEATER_HEIGHT;
+            return reapeater_frames[0];
+        case PLANT_SPLITPEA:
+            w = SPLITPEA_WIDTH;
+            h = SPLITPEA_HEIGHT;
+            return splitpea_frames[0];
+        case PLANT_SQUASH:
+            w = SQUASH_WIDTH;
+            h = SQUASH_HEIGHT;
+            return squash_frames[0];
+        case PLANT_THREEPEATER:
+            w = THREEPEATER_WIDTH;
+            h = THREEPEATER_HEIGHT;
+            return threepeater_frames[0];
+        case PLANT_TORCHWOOD:
+            w = TORCHWOOD_WIDTH;
+            h = TORCHWOOD_HEIGHT;
+            return torchwood_frames[0];
+        case PLANT_TWINSUNFLOWER:
+            w = TWINSUNFLOWER_WIDTH;
+            h = TWINSUNFLOWER_HEIGHT;
+            return twinsunflower_frames[0];
+        case PLANT_WINTERMELON:
+            w = WINTERMELON_WIDTH;
+            h = WINTERMELON_HEIGHT;
+            return wintermelon_frames[0];
         case PLANT_PEASHOOTER:
         default:
             w = PEASHOOTER_WIDTH;
@@ -850,7 +1196,7 @@ void PlantsVsZombies::drawQueueHud(const PlantQueue& q, int px, int py, unsigned
             : (flash ? (unsigned char)32 : (unsigned char)0);
         for (int r = 0; r < SLOT_H; r++)
             for (int c = 0; c < SLOT_W; c++)
-                video[(py + r) * 320 + (sx + c)] = bg;
+                video[(py + r) * SCREEN_WIDTH + (sx + c)] = bg;
 
         if (i < q.getCount()) {
             /* Icône de plante (sprite mis à l'échelle) */
@@ -869,12 +1215,12 @@ void PlantsVsZombies::drawQueueHud(const PlantQueue& q, int px, int py, unsigned
             if (i == q.getRosterCursor()) {
                 unsigned char borderCol = flash ? SUN_HUD_RED : color;
                 for (int c = sx; c < sx + SLOT_W; c++) {
-                    video[py * 320 + c]                = borderCol;
-                    video[(py + SLOT_H - 1) * 320 + c] = borderCol;
+                    video[py * SCREEN_WIDTH + c]                = borderCol;
+                    video[(py + SLOT_H - 1) * SCREEN_WIDTH + c] = borderCol;
                 }
                 for (int r = py; r < py + SLOT_H; r++) {
-                    video[r * 320 + sx]                = borderCol;
-                    video[r * 320 + (sx + SLOT_W - 1)] = borderCol;
+                    video[r * SCREEN_WIDTH + sx]                = borderCol;
+                    video[r * SCREEN_WIDTH + (sx + SLOT_W - 1)] = borderCol;
                 }
             }
         }
@@ -904,7 +1250,7 @@ void PlantsVsZombies::runLogic() {
         while (compt == lastTick) thread_yield();
         lastTick = compt;
 
-        if ((compt % 16) == 0) {
+        if ((compt % LOGIC_TICK_INTERVAL) == 0) {
             /* L'input est traité avant la logique pour que les actions du joueur
                (déplacement curseur, placement de plante) soient prises en compte
                dans la frame courante. */
@@ -917,9 +1263,9 @@ void PlantsVsZombies::runLogic() {
         }
 
         /* Mise à jour du compteur FPS une fois par seconde. */
-        if (compt - fpsTimer >= 1000) {
+        if (compt - fpsTimer >= FPS_UPDATE_INTERVAL) {
             lastFps      = renderFrames;
-            lastSeconds  = compt / 1000;
+            lastSeconds  = compt / FPS_UPDATE_INTERVAL;
             renderFrames = 0;
             fpsTimer     = compt;
         }

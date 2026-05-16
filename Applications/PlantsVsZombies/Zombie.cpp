@@ -39,9 +39,9 @@ void Zombie::update() {
     if (fireEndTick > 0 && compt < fireEndTick) {
         if (compt >= fireNextDmgTick) {
             takeDamage(fireDamage);
-            fireNextDmgTick = compt + 100; // damage tick every 100 ticks
+            fireNextDmgTick = compt + FIRE_TICK_INTERVAL;
         }
-        if (++fireAnimTick >= 8) {
+        if (++fireAnimTick >= FIRE_ANIM_SPEED) {
             fireAnimTick = 0;
             fireFrame = (fireFrame + 1) % ZOMBIE_FIRE_FRAMES;
         }
@@ -60,7 +60,7 @@ void Zombie::update() {
         animTick = 0;
         frame = (frame + 1) % walkFrameCount();
         if (frame == 1 || frame == 5) {
-            x -= 5; 
+            x -= WALK_STEP; 
         }
     }
 }

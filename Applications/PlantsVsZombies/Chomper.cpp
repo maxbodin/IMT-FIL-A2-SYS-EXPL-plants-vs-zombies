@@ -8,7 +8,7 @@
 extern volatile int compt;
 
 Chomper::Chomper(int x, int y)
-    : Plant(x, y, 300), chomperState(CHOMP_IDLE),
+    : Plant(x, y, HP), chomperState(CHOMP_IDLE),
       attackFrame(0), attackAnimTick(0),
       chewFrame(0), chewAnimTick(0), chewEndTick(0)
 {}

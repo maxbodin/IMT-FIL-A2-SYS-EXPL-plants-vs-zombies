@@ -3,7 +3,7 @@
 
 class Zombie;
 
-enum BulletType { BULLET_PEASHOOTER, BULLET_SNOW_PEA };
+enum BulletType { BULLET_PEASHOOTER, BULLET_FIRE_PEA, BULLET_SNOW_PEA, BULLET_CABBAGE, BULLET_THORN, BULLET_KERNEL, BULLET_BUTTER, BULLET_COB, BULLET_MELON, BULLET_WINTER_MELON };
 
 class Bullet {
 public:
@@ -26,6 +26,10 @@ public:
     int getHeight() const;
     int getDamage() const;
     BulletType getType() const;
+    int getDirection() const;
+    void setDirection(int dir);
+    void doubleDamage();
+    void igniteByTorchwood();
 
 private:
     static const int SPEED             = 4;
@@ -42,6 +46,10 @@ private:
     int impactFrame;
     int impactAnimTick;
     int impactHoldTicks;
+    int projectileFrame;
+    int projectileAnimTick;
+    int direction;
+    bool torchUpgraded;
 };
 
 #endif

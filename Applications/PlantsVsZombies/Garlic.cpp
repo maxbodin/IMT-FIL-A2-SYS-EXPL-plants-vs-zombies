@@ -1,7 +1,28 @@
 #include <Applications/PlantsVsZombies/Garlic.h>
 #include <Applications/PlantsVsZombies/sprites/plants/garlic_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/garlic_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/garlic_very_damaged_sprite.h>
+#include <vga/vga.h>
 
 Garlic::Garlic(int x, int y) : Plant(x, y, GARLIC_HP) {}
+
+void Garlic::render() {
+    if (state == DEAD) return;
+
+    int hpPct = (hp * 100) / maxHp;
+    const unsigned char* spriteData;
+
+    if (hpPct > 66) {
+        spriteData = garlic_frames[frame % GARLIC_FRAMES];
+    } else if (hpPct > 33) {
+        spriteData = garlic_damaged_frames[frame % GARLIC_DAMAGED_FRAMES];
+    } else {
+        spriteData = garlic_very_damaged_frames[frame % GARLIC_VERY_DAMAGED_FRAMES];
+    }
+
+    draw_sprite(spriteData, GARLIC_WIDTH, GARLIC_HEIGHT, x, y);
+    renderHpBar(GARLIC_WIDTH / 2, GARLIC_HEIGHT);
+}
 
 PlantType Garlic::getPlantType() const { return PLANT_GARLIC; }
 

@@ -5,12 +5,16 @@
 
 class Sunflower : public Plant {
 public:
-    static const int COST        = 50;
-    static const int SUN_MIN_DELAY = 5000;
-    static const int SUN_MAX_DELAY = 9000;
+    static const int COST             = 50;
+    static const int SUN_MIN_DELAY    = 5000;
+    static const int SUN_MAX_DELAY    = 9000;
+    static const int PRODUCING_DURATION = 120;
+    static const int PRODUCING_ANIM_SPEED = 6;
 
     Sunflower(int x, int y);
 
+    void update() override;
+    void render() override;
     PlantType getPlantType() const override;
 
     bool hasSunReady() const override;
@@ -24,6 +28,10 @@ protected:
 
 private:
     int nextSunTick;
+    bool producing;
+    int producingStartTick;
+    int producingFrame;
+    int producingAnimTick;
 
     int randomSunDelay();
 };

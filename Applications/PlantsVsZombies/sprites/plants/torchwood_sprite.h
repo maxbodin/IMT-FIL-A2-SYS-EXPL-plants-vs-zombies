@@ -1,0 +1,10 @@
+#ifndef TORCHWOOD_ANIM_H
+#define TORCHWOOD_ANIM_H
+
+#define TORCHWOOD_WIDTH  28
+#define TORCHWOOD_HEIGHT 38
+#define TORCHWOOD_FRAMES 8
+
+extern unsigned char torchwood_frames[TORCHWOOD_FRAMES][TORCHWOOD_WIDTH*TORCHWOOD_HEIGHT];
+
+#endif

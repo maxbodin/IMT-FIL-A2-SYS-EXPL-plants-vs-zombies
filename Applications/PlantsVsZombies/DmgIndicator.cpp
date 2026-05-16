@@ -27,7 +27,7 @@ void DmgIndicator::update() {
 void DmgIndicator::render() {
     if (!active) return;
     int elapsed = compt - startTick;
-    int floatY  = y - (elapsed / 50);
+    int floatY  = y - (elapsed / DMG_INDICATOR_FLOAT_DIVISOR);
     draw_number(value, x, floatY, DMG_COLOR, 1);
 }
 

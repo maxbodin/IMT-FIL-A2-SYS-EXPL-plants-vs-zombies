@@ -7,8 +7,10 @@ enum ChomperState { CHOMP_IDLE, CHOMP_ATTACKING, CHOMP_CHEWING };
 
 class Chomper : public Plant {
 public:
-    static const int COST       = 150;
-    static const int CHEW_TIME  = 15000; // ~15s to digest
+    static const int COST          = 150;
+    static const int HP            = 300;
+    static const int CHEW_TIME     = 15000; // ~15s to digest
+    static const int CHOMP_DAMAGE  = 9999;  // instant kill
 
     Chomper(int x, int y);
 
