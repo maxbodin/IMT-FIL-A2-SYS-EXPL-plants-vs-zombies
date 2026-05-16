@@ -11,6 +11,7 @@
 #include <Applications/PlantsVsZombies/WallNut.h>
 #include <Applications/PlantsVsZombies/Bullet.h>
 #include <Applications/PlantsVsZombies/Zombie.h>
+#include <Applications/PlantsVsZombies/DiscoZombie.h>
 #include <Applications/PlantsVsZombies/DmgIndicator.h>
 #include <Applications/PlantsVsZombies/ObjectPool.h>
 #include <Applications/PlantsVsZombies/Sun.h>

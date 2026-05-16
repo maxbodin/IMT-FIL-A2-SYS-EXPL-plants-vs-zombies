@@ -2,11 +2,15 @@
 #define WAVE_MANAGER_H
 
 #include <Applications/PlantsVsZombies/Zombie.h>
+#include <Applications/PlantsVsZombies/ConeZombie.h>
+#include <Applications/PlantsVsZombies/DiscoZombie.h>
+#include <Applications/PlantsVsZombies/PogoZombie.h>
+#include <Applications/PlantsVsZombies/FootballZombie.h>
 #include <Applications/PlantsVsZombies/Grid.h>
 
 #define BASE_ZOMBIES         2
-#define ZOMBIES_PER_WAVE     3
-#define MAX_WAVE             10   // waves loop after this
+#define MAX_ZOMBIES         100   // zombies at MAX_WAVE
+#define MAX_WAVE             20   // waves loop after this
 #define WAVE_PAUSE       12000   // ticks between waves (12 s)
 #define SPAWN_INTERVAL    3000   // ticks between zombie spawns within a wave
 

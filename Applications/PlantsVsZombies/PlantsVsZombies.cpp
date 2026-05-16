@@ -226,6 +226,7 @@ void PlantsVsZombies::updateLogic() {
             continue;
 
         for (int i = 0; i < zombieCount; i++) {
+            if (!zombies[i]->canBeBlocked()) continue; // pogo zombies jump over mines
             int zCenterX = zombies[i]->getX() + zombies[i]->getWidth() / 2;
             int zFootY   = zombies[i]->getY() + zombies[i]->getHeight();
             int zcol, zrow;
@@ -234,6 +235,7 @@ void PlantsVsZombies::updateLogic() {
                 pm->explode();
                 /* Damage all zombies on explosion tile and adjacent tiles */
                 for (int z2 = 0; z2 < zombieCount; z2++) {
+                    if (!zombies[z2]->canBeBlocked()) continue; // pogo zombies immune
                     int z2cx = zombies[z2]->getX() + zombies[z2]->getWidth() / 2;
                     int z2fy = zombies[z2]->getY() + zombies[z2]->getHeight();
                     int z2col, z2row;
@@ -258,6 +260,7 @@ void PlantsVsZombies::updateLogic() {
     // --- Zombies: block/unblock + damage plant + special interactions + update + remove dead ---
     for (int i = 0; i < zombieCount; i++) {
         bool blocked = false;
+        if (zombies[i]->canBeBlocked()) {
         for (int p = 0; p < plantCount; p++) {
             int dx = zombies[i]->getX() - (plants[p]->getX() + plants[p]->getWidth());
             int dy = zombies[i]->getY() - plants[p]->getY();
@@ -306,6 +309,7 @@ void PlantsVsZombies::updateLogic() {
                 break;
             }
         }
+        } // canBeBlocked
         blocked ? zombies[i]->block() : zombies[i]->unblock();
         zombies[i]->update();
 
@@ -322,6 +326,25 @@ void PlantsVsZombies::updateLogic() {
             zombies[i] = zombies[--zombieCount];
             zombies[zombieCount] = 0;
             i--;
+        }
+    }
+
+    // --- Disco zombie summons: spawn backup dancers around summoner ---
+    for (int i = 0; i < zombieCount; i++) {
+        if (!zombies[i]->hasPendingSummon()) continue;
+        zombies[i]->consumeSummon();
+        int zx = zombies[i]->getX();
+        int zy = zombies[i]->getY() + zombies[i]->getHeight();
+        // Compute summoner lane from foot position
+        int lane = (zy - Grid::OFFSET_Y) / Grid::TILE_SIZE;
+        // Spawn backup dancers in adjacent lanes (up to SUMMON_COUNT)
+        int offsets[] = { -1, 1, -2, 2 };
+        for (int s = 0; s < DiscoZombie::SUMMON_COUNT && zombieCount < MAX_ZOMBIES; s++) {
+            int targetLane = lane + offsets[s];
+            if (targetLane < 0 || targetLane >= Grid::ROWS) continue;
+            int ny = Grid::OFFSET_Y + targetLane * Grid::TILE_SIZE
+                     + Grid::TILE_SIZE / 2 - ZOMBIE_WALK_HEIGHT;
+            zombies[zombieCount++] = new Zombie(zx, ny);
         }
     }
 

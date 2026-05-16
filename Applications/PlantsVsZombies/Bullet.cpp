@@ -7,8 +7,8 @@
 #include <vga/vga.h>
 
 /* Damage values per bullet type. */
-static const int DAMAGE_PEASHOOTER = 30;
-static const int DAMAGE_SNOW_PEA   = 25;
+static const int DAMAGE_PEASHOOTER = 20;
+static const int DAMAGE_SNOW_PEA   = 15;
 
 Bullet::Bullet() : x(0), y(0), spawnX(0), active(false),
                    type(BULLET_PEASHOOTER), damage(0),

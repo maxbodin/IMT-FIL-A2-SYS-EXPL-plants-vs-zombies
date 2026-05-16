@@ -1,5 +1,6 @@
 #include <Applications/PlantsVsZombies/WaveManager.h>
 #include <Applications/PlantsVsZombies/sprites/zombies/zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_walk_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/start_text_sprite.h>
 #include <vga/vga.h>
 
@@ -26,16 +27,11 @@ void WaveManager::reset() {
     wavePendingClear = false;
 }
 
-/* Integer log2 approximation */
-static int ilog2(int v) {
-    int r = 0;
-    while (v > 1) { v >>= 1; r++; }
-    return r;
-}
-
 int WaveManager::zombiesForWave(int w) const {
-    // Logarithmic scaling: grows fast early, plateaus later
-    return BASE_ZOMBIES + ilog2(w) * ZOMBIES_PER_WAVE;
+    // Linear scaling: BASE_ZOMBIES at wave 1, MAX_ZOMBIES at MAX_WAVE
+    if (w <= 1) return BASE_ZOMBIES;
+    if (w >= MAX_WAVE) return MAX_ZOMBIES;
+    return BASE_ZOMBIES + (w - 1) * (MAX_ZOMBIES - BASE_ZOMBIES) / (MAX_WAVE - 1);
 }
 
 int WaveManager::randomLane() {
@@ -69,9 +65,33 @@ Zombie* WaveManager::update() {
     if (compt < nextSpawnTick) return 0;
 
     int lane = randomLane();
-    // Align zombie feet (bottom of sprite) with the middle of the tile lane
-    int zy   = Grid::OFFSET_Y + lane * Grid::TILE_SIZE + Grid::TILE_SIZE / 2 - ZOMBIE_WALK_HEIGHT;
-    Zombie* z = new Zombie(320 - ZOMBIE_WALK_WIDTH, zy);
+
+    /* Speed bonus: +1 per wave, capped by Zombie::MIN_ANIM_SPEED internally */
+    int speedBonus = wave - 1;
+
+    int laneCenter = Grid::OFFSET_Y + lane * Grid::TILE_SIZE + Grid::TILE_SIZE / 2;
+    int zx = 320 - ZOMBIE_WALK_WIDTH;
+
+    /* Spawn type depends on wave progression:
+       Wave 1   : basic only
+       Wave 2+  : cone zombies (~25%)
+       Wave 3+  : disco zombies (~15%)
+       Wave 4+  : pogo zombies (~15%)
+       Wave 5+  : football zombies (~10%) */
+    int roll = wave_lcg() % 100;
+    Zombie* z;
+
+    if (wave >= 5 && roll < 10) {
+        z = new FootballZombie(zx, laneCenter - ZOMBIE_WALK_HEIGHT, speedBonus);
+    } else if (wave >= 4 && roll < 25) {
+        z = new PogoZombie(zx, laneCenter - ZOMBIE_WALK_HEIGHT, speedBonus);
+    } else if (wave >= 3 && roll < 40) {
+        z = new DiscoZombie(zx, laneCenter - ZOMBIE_WALK_HEIGHT, speedBonus);
+    } else if (wave >= 2 && roll < 65) {
+        z = new ConeZombie(320 - CONE_ZOMBIE_WALK_WIDTH, laneCenter - CONE_ZOMBIE_WALK_HEIGHT, speedBonus);
+    } else {
+        z = new Zombie(zx, laneCenter - ZOMBIE_WALK_HEIGHT, speedBonus);
+    }
 
     remaining--;
     nextSpawnTick = compt + SPAWN_INTERVAL;

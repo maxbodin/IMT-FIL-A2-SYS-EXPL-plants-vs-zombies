@@ -186,7 +186,7 @@ def png_to_c(path, external_palette=None,
         f.write("};\n")
     print(f"[i] Source généré  : {source_path}", file=sys.stderr)
 
-def dir_to_c(dirpath, external_palette=None, out_dir=None, name_override=None):
+def dir_to_c(dirpath, external_palette=None, out_dir=None, name_override=None, resize=None):
     """Convertit un dossier de PNGs numérotés en tableau d'animation C."""
     import os, re
 
@@ -230,9 +230,17 @@ def dir_to_c(dirpath, external_palette=None, out_dir=None, name_override=None):
         if w > max_w: max_w = w
         if h > max_h: max_h = h
 
+    # Apply resize to max dims if requested
+    if resize:
+        max_w, max_h = resize
+
     for png in pngs:
         path = os.path.join(dirpath, png)
         im = Image.open(path)
+
+        # Resize if requested
+        if resize:
+            im = im.resize(resize, Image.LANCZOS)
 
         # Pad to max dimensions (center horizontally, align bottom)
         w, h = im.size
@@ -313,6 +321,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--palette', help="Fichier de palette externe (.pal ou .gpl)")
     parser.add_argument('-o', '--output', help="Dossier de sortie pour les fichiers générés (défaut: même dossier que l'entrée)")
     parser.add_argument('-n', '--name', help="Override base name for generated files (directories only)")
+    parser.add_argument('-r', '--resize', help="Resize sprites to WxH (e.g. 30x47)")
     parser.add_argument('image', help="Chemin vers une image PNG ou un dossier de PNGs numérotés")
     args = parser.parse_args()
 
@@ -322,8 +331,13 @@ if __name__ == "__main__":
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
 
+    resize = None
+    if args.resize:
+        rw, rh = args.resize.lower().split('x')
+        resize = (int(rw), int(rh))
+
     if os.path.isdir(args.image):
-        dir_to_c(args.image, external_palette=args.palette, out_dir=out_dir, name_override=args.name)
+        dir_to_c(args.image, external_palette=args.palette, out_dir=out_dir, name_override=args.name, resize=resize)
     else:
         base = args.name if args.name else os.path.splitext(os.path.basename(args.image))[0]
         src_dir = out_dir if out_dir else os.path.dirname(args.image)
