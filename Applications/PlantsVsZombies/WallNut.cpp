@@ -4,20 +4,7 @@
 #include <Applications/PlantsVsZombies/sprites/plants/wallnut_very_damaged_sprite.h>
 #include <vga/vga.h>
 
-WallNut::WallNut(int x, int y) : Peashooter(x, y) {
-    hp    = WALLNUT_HP;
-    maxHp = WALLNUT_HP;
-}
-
-void WallNut::update() {
-    if (state == DYING) { state = DEAD; return; }
-    if (state == DEAD) return;
-
-    if (++animTick >= ANIM_SPEED) {
-        animTick = 0;
-        frame = (frame + 1) % WALLNUT_FRAMES;
-    }
-}
+WallNut::WallNut(int x, int y) : Plant(x, y, WALLNUT_HP) {}
 
 void WallNut::render() {
     if (state == DEAD) return;
@@ -38,11 +25,9 @@ void WallNut::render() {
     renderHpBar(WALLNUT_WIDTH / 2, WALLNUT_HEIGHT);
 }
 
-bool WallNut::canShoot()       const { return false; }
-BulletType WallNut::getBulletType() const { return BULLET_PEASHOOTER; }
 PlantType WallNut::getPlantType() const { return PLANT_WALLNUT; }
-bool WallNut::hasSunReady()    const { return false; }
-void WallNut::resetSunTimer()        {}
 
-int WallNut::getWidth()  const { return WALLNUT_WIDTH; }
-int WallNut::getHeight() const { return WALLNUT_HEIGHT; }
+const unsigned char* WallNut::idleFrame(int f) const { return wallnut_frames[f]; }
+int WallNut::idleFrameCount() const { return WALLNUT_FRAMES; }
+int WallNut::spriteWidth() const { return WALLNUT_WIDTH; }
+int WallNut::spriteHeight() const { return WALLNUT_HEIGHT; }

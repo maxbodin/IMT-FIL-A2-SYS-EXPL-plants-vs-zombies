@@ -1,16 +1,15 @@
-#ifndef WALLNUT_H
-#define WALLNUT_H
+#ifndef GARLIC_H
+#define GARLIC_H
 
 #include <Applications/PlantsVsZombies/Plant.h>
 
-class WallNut : public Plant {
+class Garlic : public Plant {
 public:
-    static const int COST       = 50;
-    static const int WALLNUT_HP = 800;
+    static const int COST      = 50;
+    static const int GARLIC_HP = 400;
 
-    WallNut(int x, int y);
+    Garlic(int x, int y);
 
-    void render() override;
     PlantType getPlantType() const override;
 
 protected:

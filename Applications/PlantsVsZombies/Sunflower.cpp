@@ -11,10 +11,8 @@ static unsigned int sf_lcg() {
 }
 
 Sunflower::Sunflower(int x, int y)
-    : Peashooter(x, y), nextSunTick(0)
+    : Plant(x, y, 200), nextSunTick(0)
 {
-    hp = 200;
-    maxHp = 200;
     sf_rng ^= (unsigned int)compt;
     nextSunTick = compt + randomSunDelay();
 }
@@ -23,28 +21,6 @@ int Sunflower::randomSunDelay() {
     sf_rng ^= (unsigned int)compt;
     return SUN_MIN_DELAY + (int)(sf_lcg() % (SUN_MAX_DELAY - SUN_MIN_DELAY + 1));
 }
-
-void Sunflower::update() {
-    if (state == DYING) {
-        state = DEAD;
-        return;
-    }
-    if (state == DEAD) return;
-
-    if (++animTick >= ANIM_SPEED) {
-        animTick = 0;
-        frame = (frame + 1) % SUNFLOWER_FRAMES;
-    }
-}
-
-void Sunflower::render() {
-    if (state == DEAD) return;
-    draw_sprite(sunflower_frames[frame], SUNFLOWER_WIDTH, SUNFLOWER_HEIGHT, x, y);
-    renderHpBar(SUNFLOWER_WIDTH / 2, SUNFLOWER_HEIGHT);
-}
-
-bool Sunflower::canShoot() const { return false; }
-BulletType Sunflower::getBulletType() const { return BULLET_PEASHOOTER; }
 
 PlantType Sunflower::getPlantType() const { return PLANT_SUNFLOWER; }
 
@@ -56,5 +32,7 @@ void Sunflower::resetSunTimer() {
     nextSunTick = compt + randomSunDelay();
 }
 
-int Sunflower::getWidth()  const { return SUNFLOWER_WIDTH; }
-int Sunflower::getHeight() const { return SUNFLOWER_HEIGHT; }
+const unsigned char* Sunflower::idleFrame(int f) const { return sunflower_frames[f]; }
+int Sunflower::idleFrameCount() const { return SUNFLOWER_FRAMES; }
+int Sunflower::spriteWidth() const { return SUNFLOWER_WIDTH; }
+int Sunflower::spriteHeight() const { return SUNFLOWER_HEIGHT; }

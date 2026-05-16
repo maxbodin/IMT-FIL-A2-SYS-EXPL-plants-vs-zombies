@@ -12,12 +12,9 @@ static unsigned int jal_lcg() {
 }
 
 Jalapeno::Jalapeno(int x, int y)
-    : Peashooter(x, y), onFire(false), fireDone(false),
+    : Plant(x, y, 100), onFire(false), fireDone(false),
       fireStartTick(0), fireFrame(0), fireAnimTick(0)
-{
-    hp    = 100;
-    maxHp = 100;
-}
+{}
 
 void Jalapeno::update() {
     if (state == DYING) { state = DEAD; return; }
@@ -73,11 +70,9 @@ int Jalapeno::getFireEffectDuration() {
     return 800 + (int)(jal_lcg() % 1201); // 800-2000 ticks
 }
 
-bool Jalapeno::canShoot()       const { return false; }
-BulletType Jalapeno::getBulletType() const { return BULLET_PEASHOOTER; }
 PlantType Jalapeno::getPlantType() const { return PLANT_JALAPENO; }
-bool Jalapeno::hasSunReady()    const { return false; }
-void Jalapeno::resetSunTimer()        {}
 
-int Jalapeno::getWidth()  const { return JALAPENO_WIDTH; }
-int Jalapeno::getHeight() const { return JALAPENO_HEIGHT; }
+const unsigned char* Jalapeno::idleFrame(int f) const { return jalapeno_frames[f]; }
+int Jalapeno::idleFrameCount() const { return JALAPENO_FRAMES; }
+int Jalapeno::spriteWidth() const { return JALAPENO_WIDTH; }
+int Jalapeno::spriteHeight() const { return JALAPENO_HEIGHT; }

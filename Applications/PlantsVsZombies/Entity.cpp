@@ -37,6 +37,7 @@ EntityState Entity::getState() const {
 
 int Entity::getX() const { return x; }
 int Entity::getY() const { return y; }
+void Entity::setPosition(int nx, int ny) { x = nx; y = ny; }
 
 int Entity::getWidth() const { return 0; } // default, override in derived classes
 int Entity::getHeight() const { return 0; } // default, override in derived classes

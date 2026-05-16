@@ -1,0 +1,10 @@
+#ifndef CHERRYBOMB_ANIM_H
+#define CHERRYBOMB_ANIM_H
+
+#define CHERRYBOMB_WIDTH  28
+#define CHERRYBOMB_HEIGHT 28
+#define CHERRYBOMB_FRAMES 1
+
+extern unsigned char cherrybomb_frames[CHERRYBOMB_FRAMES][CHERRYBOMB_WIDTH*CHERRYBOMB_HEIGHT];
+
+#endif

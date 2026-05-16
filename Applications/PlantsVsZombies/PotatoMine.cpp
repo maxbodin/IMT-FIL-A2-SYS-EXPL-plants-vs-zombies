@@ -6,12 +6,9 @@
 extern volatile int compt;
 
 PotatoMine::PotatoMine(int x, int y)
-    : Peashooter(x, y), exploding(false), explosionDone(false),
+    : Plant(x, y, 100), exploding(false), explosionDone(false),
       explosionStartTick(0), explosionFrame(0), explosionAnimTick(0)
-{
-    hp    = 100;
-    maxHp = 100;
-}
+{}
 
 void PotatoMine::update() {
     if (state == DYING) { state = DEAD; return; }
@@ -61,11 +58,9 @@ void PotatoMine::explode() {
     }
 }
 
-bool PotatoMine::canShoot()       const { return false; }
-BulletType PotatoMine::getBulletType() const { return BULLET_PEASHOOTER; }
 PlantType PotatoMine::getPlantType() const { return PLANT_POTATO_MINE; }
-bool PotatoMine::hasSunReady()    const { return false; }
-void PotatoMine::resetSunTimer()        {}
 
-int PotatoMine::getWidth()  const { return POTATO_MINE_WIDTH; }
-int PotatoMine::getHeight() const { return POTATO_MINE_HEIGHT; }
+const unsigned char* PotatoMine::idleFrame(int f) const { return potato_mine_frames[f]; }
+int PotatoMine::idleFrameCount() const { return POTATO_MINE_FRAMES; }
+int PotatoMine::spriteWidth() const { return POTATO_MINE_WIDTH; }
+int PotatoMine::spriteHeight() const { return POTATO_MINE_HEIGHT; }

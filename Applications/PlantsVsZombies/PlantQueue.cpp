@@ -8,6 +8,15 @@
 #include <Applications/PlantsVsZombies/WallNut.h>
 #include <Applications/PlantsVsZombies/Chomper.h>
 #include <Applications/PlantsVsZombies/GatlingPea.h>
+#include <Applications/PlantsVsZombies/Blover.h>
+#include <Applications/PlantsVsZombies/CabbagePult.h>
+#include <Applications/PlantsVsZombies/CactusPlant.h>
+#include <Applications/PlantsVsZombies/CherryBomb.h>
+#include <Applications/PlantsVsZombies/CobCannon.h>
+#include <Applications/PlantsVsZombies/Garlic.h>
+#include <Applications/PlantsVsZombies/KernelPult.h>
+#include <Applications/PlantsVsZombies/Marigold.h>
+#include <Applications/PlantsVsZombies/MelonPult.h>
 #include <sextant/interruptions/irq.h>
 
 extern volatile int compt;
@@ -51,7 +60,16 @@ PlantType PlantQueue::randomPlantType() {
         case 4: return PLANT_POTATO_MINE;
         case 5: return PLANT_WALLNUT;
         case 6: return PLANT_CHOMPER;
-        default: return PLANT_GATLING_PEA;
+        case 7: return PLANT_GATLING_PEA;
+        case 8: return PLANT_BLOVER;
+        case 9: return PLANT_CABBAGEPULT;
+        case 10: return PLANT_CACTUS;
+        case 11: return PLANT_CHERRYBOMB;
+        case 12: return PLANT_COBCANNON;
+        case 13: return PLANT_GARLIC;
+        case 14: return PLANT_KERNELPULT;
+        case 15: return PLANT_MARIGOLD;
+        default: return PLANT_MELONPULT;
     }
 }
 
@@ -157,6 +175,15 @@ int PlantQueue::costOf(PlantType type) {
         case PLANT_WALLNUT:         return WallNut::COST;
         case PLANT_CHOMPER:         return Chomper::COST;
         case PLANT_GATLING_PEA:     return GatlingPea::COST;
+        case PLANT_BLOVER:          return Blover::COST;
+        case PLANT_CABBAGEPULT:     return CabbagePult::COST;
+        case PLANT_CACTUS:          return CactusPlant::COST;
+        case PLANT_CHERRYBOMB:      return CherryBomb::COST;
+        case PLANT_COBCANNON:       return CobCannon::COST;
+        case PLANT_GARLIC:          return Garlic::COST;
+        case PLANT_KERNELPULT:      return KernelPult::COST;
+        case PLANT_MARIGOLD:        return Marigold::COST;
+        case PLANT_MELONPULT:       return MelonPult::COST;
         case PLANT_PEASHOOTER:
         default:                    return Peashooter::COST;
     }

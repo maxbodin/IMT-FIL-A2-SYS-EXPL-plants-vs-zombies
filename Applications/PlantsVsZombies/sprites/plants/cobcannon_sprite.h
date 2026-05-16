@@ -1,0 +1,10 @@
+#ifndef COBCANNON_ANIM_H
+#define COBCANNON_ANIM_H
+
+#define COBCANNON_WIDTH  56
+#define COBCANNON_HEIGHT 30
+#define COBCANNON_FRAMES 6
+
+extern unsigned char cobcannon_frames[COBCANNON_FRAMES][COBCANNON_WIDTH*COBCANNON_HEIGHT];
+
+#endif

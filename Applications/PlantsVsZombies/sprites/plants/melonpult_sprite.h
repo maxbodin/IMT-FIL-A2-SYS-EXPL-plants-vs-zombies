@@ -1,0 +1,10 @@
+#ifndef MELONPULT_ANIM_H
+#define MELONPULT_ANIM_H
+
+#define MELONPULT_WIDTH  32
+#define MELONPULT_HEIGHT 28
+#define MELONPULT_FRAMES 6
+
+extern unsigned char melonpult_frames[MELONPULT_FRAMES][MELONPULT_WIDTH*MELONPULT_HEIGHT];
+
+#endif

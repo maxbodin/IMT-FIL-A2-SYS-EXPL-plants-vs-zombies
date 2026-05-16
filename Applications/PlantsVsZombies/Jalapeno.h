@@ -1,9 +1,9 @@
 #ifndef JALAPENO_H
 #define JALAPENO_H
 
-#include <Applications/PlantsVsZombies/Peashooter.h>
+#include <Applications/PlantsVsZombies/Plant.h>
 
-class Jalapeno : public Peashooter {
+class Jalapeno : public Plant {
 public:
     static const int COST             = 125;
     static const int FIRE_DURATION    = 600;   // ticks the fire animation plays
@@ -16,14 +16,7 @@ public:
 
     void update() override;
     void render() override;
-    bool canShoot() const override;
-    BulletType getBulletType() const override;
     PlantType getPlantType() const override;
-    bool hasSunReady() const override;
-    void resetSunTimer() override;
-
-    int getWidth()  const override;
-    int getHeight() const override;
 
     /* Called when a zombie steps on the jalapeno. */
     void ignite();
@@ -33,6 +26,12 @@ public:
     /* Fire effect applied to zombie: random damage, random duration */
     int  getFireDamage();
     int  getFireEffectDuration();
+
+protected:
+    const unsigned char* idleFrame(int f) const override;
+    int idleFrameCount() const override;
+    int spriteWidth() const override;
+    int spriteHeight() const override;
 
 private:
     bool onFire;
