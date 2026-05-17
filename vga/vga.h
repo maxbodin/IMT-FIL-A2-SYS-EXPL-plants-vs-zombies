@@ -1,5 +1,9 @@
 #ifndef VGA_H
 #define VGA_H
+
+#define SCREEN_WIDTH  320
+#define SCREEN_HEIGHT 200
+
 extern volatile unsigned char *video;
 
 void set_vga_mode13(void);
