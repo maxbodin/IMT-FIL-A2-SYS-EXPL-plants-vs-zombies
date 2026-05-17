@@ -1,21 +1,25 @@
-#ifndef CONE_ZOMBIE_H
-#define CONE_ZOMBIE_H
+#ifndef BUCKETHEAD_ZOMBIE_H
+#define BUCKETHEAD_ZOMBIE_H
 
 #include <Applications/PlantsVsZombies/Zombie.h>
 
-class ConeZombie : public Zombie {
+class BucketheadZombie : public Zombie {
 public:
-    static const int CONE_HP = 370;
-    static const int CONE_DAMAGED_THRESHOLD = 245; // below this: damaged cone
-    static const int CONE_LOST_THRESHOLD    = 120; // below this: no cone
-    static const int LANE_SWITCH_CHANCE = 200;
+    static const int BUCKET_HP = 650;
+    static const int BUCKET_DAMAGED_THRESHOLD = 430;
+    static const int BUCKET_LOST_THRESHOLD    = 200;
 
-    ConeZombie(int x, int y, int speedBonus = 0);
+    BucketheadZombie(int x, int y, int speedBonus = 0);
 
     int getWidth()  const override;
     int getHeight() const override;
 
 protected:
+    int lastDamageStage;
+    int getDamageStage() const;
+
+    void onUpdate() override;
+
     const unsigned char* currentWalkFrame(int f) const override;
     const unsigned char* currentFightFrame(int f) const override;
     int currentWalkFrameCount() const override;
@@ -30,13 +34,6 @@ protected:
     int currentDeathWidth() const override;
     int currentDeathHeight() const override;
     bool hasDeathAnimation() const override;
-
-    void onUpdate() override;
-
-private:
-    unsigned int rng;
-    int lastDamageStage; // preserved at death for death animation
-    int getDamageStage() const;
 };
 
 #endif

@@ -1,16 +1,17 @@
-#ifndef CONE_ZOMBIE_H
-#define CONE_ZOMBIE_H
+#ifndef POLEVAULTING_ZOMBIE_H
+#define POLEVAULTING_ZOMBIE_H
 
 #include <Applications/PlantsVsZombies/Zombie.h>
 
-class ConeZombie : public Zombie {
+class PoleVaultingZombie : public Zombie {
 public:
-    static const int CONE_HP = 370;
-    static const int CONE_DAMAGED_THRESHOLD = 245; // below this: damaged cone
-    static const int CONE_LOST_THRESHOLD    = 120; // below this: no cone
-    static const int LANE_SWITCH_CHANCE = 200;
+    static const int VAULT_HP    = 300;
+    static const int SPEED_BONUS = 3;   // fast runner
+    static const int VAULT_ANIM_SPEED = 6;
 
-    ConeZombie(int x, int y, int speedBonus = 0);
+    PoleVaultingZombie(int x, int y, int speedBonus = 0);
+
+    bool canBeBlocked() const override;
 
     int getWidth()  const override;
     int getHeight() const override;
@@ -34,9 +35,10 @@ protected:
     void onUpdate() override;
 
 private:
-    unsigned int rng;
-    int lastDamageStage; // preserved at death for death animation
-    int getDamageStage() const;
+    bool hasVaulted;
+    bool vaulting;
+    int vaultFrame;
+    int vaultAnimTick;
 };
 
 #endif

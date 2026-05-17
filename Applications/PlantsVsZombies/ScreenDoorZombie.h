@@ -1,16 +1,15 @@
-#ifndef CONE_ZOMBIE_H
-#define CONE_ZOMBIE_H
+#ifndef SCREENDOOR_ZOMBIE_H
+#define SCREENDOOR_ZOMBIE_H
 
 #include <Applications/PlantsVsZombies/Zombie.h>
 
-class ConeZombie : public Zombie {
+class ScreenDoorZombie : public Zombie {
 public:
-    static const int CONE_HP = 370;
-    static const int CONE_DAMAGED_THRESHOLD = 245; // below this: damaged cone
-    static const int CONE_LOST_THRESHOLD    = 120; // below this: no cone
-    static const int LANE_SWITCH_CHANCE = 200;
+    static const int SCREENDOOR_HP       = 400;
+    static const int DAMAGED_THRESHOLD   = 260;
+    static const int NO_DOOR_THRESHOLD   = 130;
 
-    ConeZombie(int x, int y, int speedBonus = 0);
+    ScreenDoorZombie(int x, int y, int speedBonus = 0);
 
     int getWidth()  const override;
     int getHeight() const override;
@@ -34,8 +33,7 @@ protected:
     void onUpdate() override;
 
 private:
-    unsigned int rng;
-    int lastDamageStage; // preserved at death for death animation
+    int lastDamageStage;
     int getDamageStage() const;
 };
 

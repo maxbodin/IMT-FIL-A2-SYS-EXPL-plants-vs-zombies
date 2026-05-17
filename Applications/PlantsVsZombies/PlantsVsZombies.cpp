@@ -50,7 +50,8 @@
 #include <Applications/PlantsVsZombies/sprites/objects/sun_small_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/background_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/game_over_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_walk_full_sprite.h>
 #include <sextant/interruptions/handler/handler_clavier.h>
 #include <sextant/memoire/memoire.h>
 #include <sextant/threads/Threads.h>
@@ -545,7 +546,7 @@ void PlantsVsZombies::updateLogic() {
         blocked ? zombies[i]->block() : zombies[i]->unblock();
         zombies[i]->update();
 
-        if (zombies[i]->getX() <= 0) {
+        if (zombies[i]->getX() <= 0 && zombies[i]->getState() != DYING) {
             lives--;
             delete zombies[i];
             zombies[i] = zombies[--zombieCount];
@@ -575,8 +576,8 @@ void PlantsVsZombies::updateLogic() {
             int targetLane = lane + offsets[s];
             if (targetLane < 0 || targetLane >= Grid::ROWS) continue;
             int ny = Grid::OFFSET_Y + targetLane * Grid::TILE_SIZE
-                     + Grid::TILE_SIZE / 2 - ZOMBIE_WALK_HEIGHT;
-            zombies[zombieCount++] = new Zombie(zx, ny);
+                     + Grid::TILE_SIZE / 2 - BACKUPDANCER_ZOMBIE_WALK_FULL_HEIGHT;
+            zombies[zombieCount++] = new BackupDancerZombie(zx, ny);
         }
     }
 

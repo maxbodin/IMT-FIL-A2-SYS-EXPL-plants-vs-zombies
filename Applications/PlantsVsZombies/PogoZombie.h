@@ -5,25 +5,41 @@
 
 class PogoZombie : public Zombie {
 public:
-    static const int POGO_TOTAL_HP = 200;
-    static const int POGO_HP       = 100; // damage absorbed before pogo breaks
-    static const int POGO_SPEED    = 5;   // inherently very fast
+    static const int POGO_TOTAL_HP      = 300;
+    static const int POGO_HP            = 150; // damage to break the pogo stick
+    static const int POGO_SPEED         = 3;   // extra speed while on pogo
+    static const int HEADLESS_THRESHOLD = 80;
+    static const int ARMLESS_THRESHOLD  = 40;
 
     PogoZombie(int x, int y, int speedBonus = 0);
 
     bool canBeBlocked() const override;
-    bool isOnPogo() const { return pogoHp > 0; }
+
+    int getWidth()  const override;
+    int getHeight() const override;
 
 protected:
-    const unsigned char* walkFrame(int f) const override;
-    const unsigned char* fightFrame(int f) const override;
-    int walkFrameCount() const override;
-    int fightFrameCount() const override;
+    const unsigned char* currentWalkFrame(int f) const override;
+    const unsigned char* currentFightFrame(int f) const override;
+    int currentWalkFrameCount() const override;
+    int currentFightFrameCount() const override;
+    int currentWalkWidth() const override;
+    int currentWalkHeight() const override;
+    int currentFightWidth() const override;
+    int currentFightHeight() const override;
+
+    const unsigned char* currentDeathFrame(int f) const override;
+    int currentDeathFrameCount() const override;
+    int currentDeathWidth() const override;
+    int currentDeathHeight() const override;
+    bool hasDeathAnimation() const override;
+
     void onUpdate() override;
 
 private:
     int pogoHp;
-    int pogoDamageAccum; // tracks damage taken to decide when pogo breaks
+    int lastDamageStage;
+    int getDamageStage() const;
 };
 
 #endif

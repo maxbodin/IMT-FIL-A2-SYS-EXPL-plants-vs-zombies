@@ -1,16 +1,19 @@
-#ifndef CONE_ZOMBIE_H
-#define CONE_ZOMBIE_H
+#ifndef BALLOON_ZOMBIE_H
+#define BALLOON_ZOMBIE_H
 
 #include <Applications/PlantsVsZombies/Zombie.h>
 
-class ConeZombie : public Zombie {
+class BalloonZombie : public Zombie {
 public:
-    static const int CONE_HP = 370;
-    static const int CONE_DAMAGED_THRESHOLD = 245; // below this: damaged cone
-    static const int CONE_LOST_THRESHOLD    = 120; // below this: no cone
-    static const int LANE_SWITCH_CHANCE = 200;
+    static const int BALLOON_TOTAL_HP  = 200;
+    static const int BALLOON_HP        = 80;  // damage to pop balloon
+    static const int NO_ARM_THRESHOLD  = 50;  // damage stage: no arm
+    static const int POP_ANIM_SPEED    = 6;
 
-    ConeZombie(int x, int y, int speedBonus = 0);
+    BalloonZombie(int x, int y, int speedBonus = 0);
+
+    bool canBeBlocked() const override;
+    bool isFlying() const override;
 
     int getWidth()  const override;
     int getHeight() const override;
@@ -34,8 +37,12 @@ protected:
     void onUpdate() override;
 
 private:
-    unsigned int rng;
-    int lastDamageStage; // preserved at death for death animation
+    int balloonHp;
+    bool balloonPopped;
+    bool popping;       // currently playing pop animation
+    int popFrame;
+    int popAnimTick;
+    int lastDamageStage;
     int getDamageStage() const;
 };
 

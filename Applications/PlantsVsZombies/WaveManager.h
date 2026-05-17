@@ -3,9 +3,22 @@
 
 #include <Applications/PlantsVsZombies/Zombie.h>
 #include <Applications/PlantsVsZombies/ConeZombie.h>
+#include <Applications/PlantsVsZombies/BucketheadZombie.h>
 #include <Applications/PlantsVsZombies/DiscoZombie.h>
 #include <Applications/PlantsVsZombies/PogoZombie.h>
 #include <Applications/PlantsVsZombies/FootballZombie.h>
+#include <Applications/PlantsVsZombies/BackupDancerZombie.h>
+#include <Applications/PlantsVsZombies/BalloonZombie.h>
+#include <Applications/PlantsVsZombies/BaseballZombie.h>
+#include <Applications/PlantsVsZombies/CatapultZombie.h>
+#include <Applications/PlantsVsZombies/DiggerZombie.h>
+#include <Applications/PlantsVsZombies/GargantuarZombie.h>
+#include <Applications/PlantsVsZombies/JackInTheBoxZombie.h>
+#include <Applications/PlantsVsZombies/JalapenoZombie.h>
+#include <Applications/PlantsVsZombies/NewspaperZombie.h>
+#include <Applications/PlantsVsZombies/PoleVaultingZombie.h>
+#include <Applications/PlantsVsZombies/ScreenDoorZombie.h>
+#include <Applications/PlantsVsZombies/YetiZombie.h>
 #include <Applications/PlantsVsZombies/Grid.h>
 
 #define BASE_ZOMBIES         2

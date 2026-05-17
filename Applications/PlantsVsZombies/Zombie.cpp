@@ -1,6 +1,13 @@
 #include <Applications/PlantsVsZombies/Zombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/zombie_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/zombie_fight_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_walk_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_walk_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_walk_headless_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_fight_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_fight_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_fight_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_death_damaged_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/objects/zombie_fire_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/objects/snowpea_impact_sprite.h>
 #include <vga/vga.h>
@@ -15,16 +22,26 @@ static int clampSpeed(int bonus) {
 Zombie::Zombie(int x, int y, int speedBonus)
     : Entity(x, y, HP), animSpeed(clampSpeed(speedBonus)),
       cooldown(HIT_DELAY), frame(0), animTick(0), slowTicks(0),
-      fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0) {}
+      fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0), deathFrame(0), deathAnimTick(0) {}
 
 Zombie::Zombie(int x, int y, int customHp, int speedBonus)
     : Entity(x, y, customHp), animSpeed(clampSpeed(speedBonus)),
       cooldown(HIT_DELAY), frame(0), animTick(0), slowTicks(0),
-      fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0) {}
+      fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0), deathFrame(0), deathAnimTick(0) {}
 
 void Zombie::update() {
     if (state == DYING) {
-        state = DEAD;
+        if (hasDeathAnimation()) {
+            if (++deathAnimTick >= DEATH_ANIM_SPEED) {
+                deathAnimTick = 0;
+                deathFrame++;
+                if (deathFrame >= currentDeathFrameCount()) {
+                    state = DEAD;
+                }
+            }
+        } else {
+            state = DEAD;
+        }
         return;
     }
 
@@ -54,11 +71,11 @@ void Zombie::update() {
     if (state == BLOCKED) {
         if (++animTick >= speed) {
             animTick = 0;
-            frame = (frame + 1) % fightFrameCount();
+            frame = (frame + 1) % currentFightFrameCount();
         }
     } else if (++animTick >= speed) {
         animTick = 0;
-        frame = (frame + 1) % walkFrameCount();
+        frame = (frame + 1) % currentWalkFrameCount();
         if (frame == 1 || frame == 5) {
             x -= WALK_STEP; 
         }
@@ -67,12 +84,21 @@ void Zombie::update() {
 
 void Zombie::render() {
     if (state == DEAD) return;
+
+    /* Death animation rendering */
+    if (state == DYING && hasDeathAnimation()) {
+        int df = deathFrame < currentDeathFrameCount() ? deathFrame : currentDeathFrameCount() - 1;
+        draw_sprite(currentDeathFrame(df),
+                    currentDeathWidth(), currentDeathHeight(), x, y);
+        return;
+    }
+
     int w = getWidth();
     int h = getHeight();
     if (state == BLOCKED) {
-        draw_sprite(fightFrame(frame), ZOMBIE_FIGHT_WIDTH, ZOMBIE_FIGHT_HEIGHT, x, y);
+        draw_sprite(currentFightFrame(frame), currentFightWidth(), currentFightHeight(), x, y);
     } else {
-        draw_sprite(walkFrame(frame), ZOMBIE_WALK_WIDTH, ZOMBIE_WALK_HEIGHT, x, y);
+        draw_sprite(currentWalkFrame(frame), currentWalkWidth(), currentWalkHeight(), x, y);
     }
     renderHpBar(w / 2, h);
 
@@ -96,8 +122,8 @@ bool Zombie::canHit() const {
     return state != DYING && state != DEAD && cooldown == 0;
 }
 
-int Zombie::getWidth()  const { return ZOMBIE_WALK_WIDTH; }
-int Zombie::getHeight() const { return ZOMBIE_WALK_HEIGHT; }
+int Zombie::getWidth()  const { return BASIC_ZOMBIE_WALK_FULL_WIDTH; }
+int Zombie::getHeight() const { return BASIC_ZOMBIE_WALK_FULL_HEIGHT; }
 
 void Zombie::resetCooldown() {
     cooldown = HIT_DELAY;
@@ -138,9 +164,48 @@ bool Zombie::isOnFire() const {
 bool Zombie::hasPendingSummon() const { return false; }
 void Zombie::consumeSummon() {}
 bool Zombie::canBeBlocked() const { return true; }
+bool Zombie::isFlying() const { return false; }
 
-const unsigned char* Zombie::walkFrame(int f)  const { return zombie_walk_frames[f]; }
-const unsigned char* Zombie::fightFrame(int f) const { return zombie_fight_frames[f]; }
-int Zombie::walkFrameCount()  const { return ZOMBIE_WALK_FRAMES; }
-int Zombie::fightFrameCount() const { return ZOMBIE_FIGHT_FRAMES; }
+const unsigned char* Zombie::currentWalkFrame(int f)  const {
+    if (hp > 100) return basic_zombie_walk_full_frames[f];
+    if (hp > 50)  return basic_zombie_walk_damaged_frames[f];
+    if (hp > 25)  return basic_zombie_walk_no_arm_frames[f];
+    return basic_zombie_walk_headless_frames[f % BASIC_ZOMBIE_WALK_HEADLESS_FRAMES];
+}
+const unsigned char* Zombie::currentFightFrame(int f) const {
+    if (hp > 100) return basic_zombie_fight_full_frames[f];
+    if (hp > 50)  return basic_zombie_fight_damaged_frames[f];
+    return basic_zombie_fight_no_arm_frames[f];
+}
+int Zombie::currentWalkFrameCount()  const { return BASIC_ZOMBIE_WALK_FULL_FRAMES; }
+int Zombie::currentFightFrameCount() const { return BASIC_ZOMBIE_FIGHT_FULL_FRAMES; }
+int Zombie::currentWalkWidth()  const {
+    if (hp <= 25) return BASIC_ZOMBIE_WALK_HEADLESS_WIDTH;
+    return BASIC_ZOMBIE_WALK_FULL_WIDTH;
+}
+int Zombie::currentWalkHeight() const {
+    if (hp <= 25) return BASIC_ZOMBIE_WALK_HEADLESS_HEIGHT;
+    return BASIC_ZOMBIE_WALK_FULL_HEIGHT;
+}
+int Zombie::currentFightWidth()  const { return BASIC_ZOMBIE_FIGHT_FULL_WIDTH; }
+int Zombie::currentFightHeight() const { return BASIC_ZOMBIE_FIGHT_FULL_HEIGHT; }
+
+const unsigned char* Zombie::currentDeathFrame(int f) const {
+    if (hp <= 100) return basic_zombie_death_damaged_frames[f % BASIC_ZOMBIE_DEATH_DAMAGED_FRAMES];
+    return basic_zombie_death_frames[f];
+}
+int Zombie::currentDeathFrameCount() const {
+    if (hp <= 100) return BASIC_ZOMBIE_DEATH_DAMAGED_FRAMES;
+    return BASIC_ZOMBIE_DEATH_FRAMES;
+}
+int Zombie::currentDeathWidth() const {
+    if (hp <= 100) return BASIC_ZOMBIE_DEATH_DAMAGED_WIDTH;
+    return BASIC_ZOMBIE_DEATH_WIDTH;
+}
+int Zombie::currentDeathHeight() const {
+    if (hp <= 100) return BASIC_ZOMBIE_DEATH_DAMAGED_HEIGHT;
+    return BASIC_ZOMBIE_DEATH_HEIGHT;
+}
+bool Zombie::hasDeathAnimation() const { return true; }
+
 void Zombie::onUpdate() {}

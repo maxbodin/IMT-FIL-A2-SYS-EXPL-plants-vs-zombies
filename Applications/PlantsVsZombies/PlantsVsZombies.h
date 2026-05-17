@@ -22,6 +22,9 @@
 #include <Applications/PlantsVsZombies/Bullet.h>
 #include <Applications/PlantsVsZombies/Zombie.h>
 #include <Applications/PlantsVsZombies/DiscoZombie.h>
+#include <Applications/PlantsVsZombies/BackupDancerZombie.h>
+#include <Applications/PlantsVsZombies/BalloonZombie.h>
+#include <Applications/PlantsVsZombies/BaseballZombie.h>
 #include <Applications/PlantsVsZombies/DmgIndicator.h>
 #include <Applications/PlantsVsZombies/ObjectPool.h>
 #include <Applications/PlantsVsZombies/Sun.h>
