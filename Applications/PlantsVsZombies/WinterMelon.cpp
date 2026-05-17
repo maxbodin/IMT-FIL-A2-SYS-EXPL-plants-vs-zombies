@@ -1,5 +1,5 @@
 #include <Applications/PlantsVsZombies/WinterMelon.h>
-#include <Applications/PlantsVsZombies/sprites/plants/wintermelon_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/wintermelon/wintermelon_sprite.h>
 
 WinterMelon::WinterMelon(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

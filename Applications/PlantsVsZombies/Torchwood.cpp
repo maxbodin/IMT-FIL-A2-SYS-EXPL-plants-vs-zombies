@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Torchwood.h>
-#include <Applications/PlantsVsZombies/sprites/plants/torchwood_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/torchwood_fire_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/torchwood/torchwood_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/torchwood/torchwood_fire_sprite.h>
 #include <vga/vga.h>
 
 Torchwood::Torchwood(int x, int y)

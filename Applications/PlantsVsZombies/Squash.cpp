@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Squash.h>
-#include <Applications/PlantsVsZombies/sprites/plants/squash_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/squash_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/squash/squash_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/squash/squash_attacking_sprite.h>
 #include <vga/vga.h>
 
 static const int LANDED_DURATION = 30;

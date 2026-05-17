@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/KernelPult.h>
-#include <Applications/PlantsVsZombies/sprites/plants/kernelpult_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/kernelpult_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/kernelpult/kernelpult_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/kernelpult/kernelpult_attacking_sprite.h>
 
 extern volatile int compt;
 

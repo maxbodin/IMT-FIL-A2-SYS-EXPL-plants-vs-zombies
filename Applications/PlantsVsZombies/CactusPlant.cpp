@@ -1,7 +1,7 @@
 #include <Applications/PlantsVsZombies/CactusPlant.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cactus_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cactus_attacking_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cactus_growing_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cactus/cactus_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cactus/cactus_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cactus/cactus_growing_sprite.h>
 #include <vga/vga.h>
 
 CactusPlant::CactusPlant(int x, int y)

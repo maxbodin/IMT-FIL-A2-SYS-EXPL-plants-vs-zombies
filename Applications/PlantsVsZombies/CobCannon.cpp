@@ -1,10 +1,10 @@
 #include <Applications/PlantsVsZombies/CobCannon.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_loading_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_ready_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_rising_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_firing_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cobcannon_used_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_loading_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_ready_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_rising_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_firing_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_used_sprite.h>
 #include <vga/vga.h>
 
 CobCannon::CobCannon(int x, int y)

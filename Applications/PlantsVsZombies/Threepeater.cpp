@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Threepeater.h>
-#include <Applications/PlantsVsZombies/sprites/plants/threepeater_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/threepeater_shooting_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/threepeater/threepeater_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/threepeater/threepeater_shooting_sprite.h>
 
 Threepeater::Threepeater(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

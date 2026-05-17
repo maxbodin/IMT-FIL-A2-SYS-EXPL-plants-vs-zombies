@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Blover.h>
-#include <Applications/PlantsVsZombies/sprites/plants/blover_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/blover_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/blover/blover_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/blover/blover_attacking_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;

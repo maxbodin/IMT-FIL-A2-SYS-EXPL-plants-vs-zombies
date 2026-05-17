@@ -1,11 +1,11 @@
 #include <Applications/PlantsVsZombies/BalloonZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_fly_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_pop_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_walk_no_arm_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_fight_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_fight_no_arm_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/balloon_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_fly_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_pop_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_walk_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_fight_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_fight_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/balloon/balloon_zombie_death_sprite.h>
 
 BalloonZombie::BalloonZombie(int x, int y, int speedBonus)
     : Zombie(x, y, BALLOON_TOTAL_HP, speedBonus), balloonHp(BALLOON_HP),

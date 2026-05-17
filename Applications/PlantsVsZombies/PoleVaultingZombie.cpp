@@ -1,8 +1,8 @@
 #include <Applications/PlantsVsZombies/PoleVaultingZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting_zombie_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting_zombie_vault_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting_zombie_fight_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting/polevaulting_zombie_walk_vault_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting/polevaulting_zombie_vaulting_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting/polevaulting_zombie_fight_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/polevaulting/polevaulting_zombie_death_sprite.h>
 
 PoleVaultingZombie::PoleVaultingZombie(int x, int y, int speedBonus)
     : Zombie(x, y, VAULT_HP, speedBonus + SPEED_BONUS),
@@ -19,7 +19,7 @@ void PoleVaultingZombie::onUpdate() {
         if (vaultAnimTick >= VAULT_ANIM_SPEED) {
             vaultAnimTick = 0;
             ++vaultFrame;
-            if (vaultFrame >= POLEVAULTING_ZOMBIE_VAULT_FRAMES) {
+            if (vaultFrame >= POLEVAULTING_ZOMBIE_VAULTING_FRAMES) {
                 vaulting = false;
                 hasVaulted = true;
                 // Jump over the plant: move left past it
@@ -31,19 +31,19 @@ void PoleVaultingZombie::onUpdate() {
 }
 
 int PoleVaultingZombie::getWidth() const {
-    if (vaulting) return POLEVAULTING_ZOMBIE_VAULT_WIDTH;
-    return POLEVAULTING_ZOMBIE_WALK_WIDTH;
+    if (vaulting) return POLEVAULTING_ZOMBIE_VAULTING_WIDTH;
+    return POLEVAULTING_ZOMBIE_WALK_VAULT_WIDTH;
 }
 
 int PoleVaultingZombie::getHeight() const {
-    if (vaulting) return POLEVAULTING_ZOMBIE_VAULT_HEIGHT;
-    return POLEVAULTING_ZOMBIE_WALK_HEIGHT;
+    if (vaulting) return POLEVAULTING_ZOMBIE_VAULTING_HEIGHT;
+    return POLEVAULTING_ZOMBIE_WALK_VAULT_HEIGHT;
 }
 
 const unsigned char* PoleVaultingZombie::currentWalkFrame(int f) const {
     if (vaulting)
-        return polevaulting_zombie_vault_frames[vaultFrame % POLEVAULTING_ZOMBIE_VAULT_FRAMES];
-    return polevaulting_zombie_walk_frames[f];
+        return polevaulting_zombie_vaulting_frames[vaultFrame % POLEVAULTING_ZOMBIE_VAULTING_FRAMES];
+    return polevaulting_zombie_walk_vault_frames[f];
 }
 
 const unsigned char* PoleVaultingZombie::currentFightFrame(int f) const {
@@ -51,20 +51,20 @@ const unsigned char* PoleVaultingZombie::currentFightFrame(int f) const {
 }
 
 int PoleVaultingZombie::currentWalkFrameCount() const {
-    if (vaulting) return POLEVAULTING_ZOMBIE_VAULT_FRAMES;
-    return POLEVAULTING_ZOMBIE_WALK_FRAMES;
+    if (vaulting) return POLEVAULTING_ZOMBIE_VAULTING_FRAMES;
+    return POLEVAULTING_ZOMBIE_WALK_VAULT_FRAMES;
 }
 
 int PoleVaultingZombie::currentFightFrameCount() const { return POLEVAULTING_ZOMBIE_FIGHT_FRAMES; }
 
 int PoleVaultingZombie::currentWalkWidth() const {
-    if (vaulting) return POLEVAULTING_ZOMBIE_VAULT_WIDTH;
-    return POLEVAULTING_ZOMBIE_WALK_WIDTH;
+    if (vaulting) return POLEVAULTING_ZOMBIE_VAULTING_WIDTH;
+    return POLEVAULTING_ZOMBIE_WALK_VAULT_WIDTH;
 }
 
 int PoleVaultingZombie::currentWalkHeight() const {
-    if (vaulting) return POLEVAULTING_ZOMBIE_VAULT_HEIGHT;
-    return POLEVAULTING_ZOMBIE_WALK_HEIGHT;
+    if (vaulting) return POLEVAULTING_ZOMBIE_VAULTING_HEIGHT;
+    return POLEVAULTING_ZOMBIE_WALK_VAULT_HEIGHT;
 }
 
 int PoleVaultingZombie::currentFightWidth() const { return POLEVAULTING_ZOMBIE_FIGHT_WIDTH; }

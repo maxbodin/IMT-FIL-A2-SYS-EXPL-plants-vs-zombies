@@ -1,5 +1,5 @@
 #include <Applications/PlantsVsZombies/TwinSunflower.h>
-#include <Applications/PlantsVsZombies/sprites/plants/twinsunflower_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/twinsunflower/twinsunflower_sprite.h>
 
 extern volatile int compt;
 

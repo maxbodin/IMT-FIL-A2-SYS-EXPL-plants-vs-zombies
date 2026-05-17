@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Peashooter.h>
-#include <Applications/PlantsVsZombies/sprites/plants/peashooter_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/peashooter_shooting_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/peashooter/peashooter_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/peashooter/peashooter_shooting_sprite.h>
 
 Peashooter::Peashooter(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/CabbagePult.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cabbagepult_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cabbagepult_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cabbagepult/cabbagepult_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cabbagepult/cabbagepult_attacking_sprite.h>
 
 CabbagePult::CabbagePult(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

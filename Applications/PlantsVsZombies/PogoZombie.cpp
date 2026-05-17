@@ -1,12 +1,11 @@
 #include <Applications/PlantsVsZombies/PogoZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_pogo_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_pogo_headless_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_walk_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_walk_headless_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_walk_armless_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_fight_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_fight_headless_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/pogo_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_pogo_bounce_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_walk_no_pogo_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_walk_armless_headless_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_walk_armless_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_fight_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_fight_armless_headless_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/pogo/pogo_zombie_death_sprite.h>
 
 PogoZombie::PogoZombie(int x, int y, int speedBonus)
     : Zombie(x, y, POGO_TOTAL_HP, speedBonus + POGO_SPEED), pogoHp(POGO_HP), lastDamageStage(0) {}
@@ -42,70 +41,70 @@ bool PogoZombie::canBeBlocked() const {
 }
 
 int PogoZombie::getWidth() const {
-    if (pogoHp > 0) return POGO_ZOMBIE_POGO_FULL_WIDTH;
-    return POGO_ZOMBIE_WALK_FULL_WIDTH;
+    if (pogoHp > 0) return POGO_ZOMBIE_POGO_BOUNCE_WIDTH;
+    return POGO_ZOMBIE_WALK_NO_POGO_WIDTH;
 }
 
 int PogoZombie::getHeight() const {
-    if (pogoHp > 0) return POGO_ZOMBIE_POGO_FULL_HEIGHT;
-    return POGO_ZOMBIE_WALK_FULL_HEIGHT;
+    if (pogoHp > 0) return POGO_ZOMBIE_POGO_BOUNCE_HEIGHT;
+    return POGO_ZOMBIE_WALK_NO_POGO_HEIGHT;
 }
 
 const unsigned char* PogoZombie::currentWalkFrame(int f) const {
     switch (getDamageStage()) {
         case 0:  // on pogo, check headless variant
             if (hp <= HEADLESS_THRESHOLD)
-                return pogo_zombie_pogo_headless_frames[f % POGO_ZOMBIE_POGO_HEADLESS_FRAMES];
-            return pogo_zombie_pogo_full_frames[f];
-        case 2:  return pogo_zombie_walk_headless_frames[f % POGO_ZOMBIE_WALK_HEADLESS_FRAMES];
+                return pogo_zombie_pogo_bounce_frames[f % POGO_ZOMBIE_POGO_BOUNCE_FRAMES];
+            return pogo_zombie_pogo_bounce_frames[f];
+        case 2:  return pogo_zombie_walk_armless_headless_frames[f % POGO_ZOMBIE_WALK_ARMLESS_HEADLESS_FRAMES];
         case 3:  return pogo_zombie_walk_armless_frames[f % POGO_ZOMBIE_WALK_ARMLESS_FRAMES];
-        default: return pogo_zombie_walk_full_frames[f];
+        default: return pogo_zombie_walk_no_pogo_frames[f];
     }
 }
 
 const unsigned char* PogoZombie::currentFightFrame(int f) const {
     if (getDamageStage() >= 2)
-        return pogo_zombie_fight_headless_frames[f % POGO_ZOMBIE_FIGHT_HEADLESS_FRAMES];
-    return pogo_zombie_fight_full_frames[f];
+        return pogo_zombie_fight_armless_headless_frames[f % POGO_ZOMBIE_FIGHT_ARMLESS_HEADLESS_FRAMES];
+    return pogo_zombie_fight_frames[f];
 }
 
 int PogoZombie::currentWalkFrameCount() const {
-    if (pogoHp > 0) return POGO_ZOMBIE_POGO_FULL_FRAMES;
-    return POGO_ZOMBIE_WALK_FULL_FRAMES;
+    if (pogoHp > 0) return POGO_ZOMBIE_POGO_BOUNCE_FRAMES;
+    return POGO_ZOMBIE_WALK_NO_POGO_FRAMES;
 }
 
-int PogoZombie::currentFightFrameCount() const { return POGO_ZOMBIE_FIGHT_FULL_FRAMES; }
+int PogoZombie::currentFightFrameCount() const { return POGO_ZOMBIE_FIGHT_FRAMES; }
 
 int PogoZombie::currentWalkWidth() const {
     switch (getDamageStage()) {
         case 0:
-            if (hp <= HEADLESS_THRESHOLD) return POGO_ZOMBIE_POGO_HEADLESS_WIDTH;
-            return POGO_ZOMBIE_POGO_FULL_WIDTH;
-        case 2:  return POGO_ZOMBIE_WALK_HEADLESS_WIDTH;
+            if (hp <= HEADLESS_THRESHOLD) return POGO_ZOMBIE_POGO_BOUNCE_WIDTH;
+            return POGO_ZOMBIE_POGO_BOUNCE_WIDTH;
+        case 2:  return POGO_ZOMBIE_WALK_ARMLESS_HEADLESS_WIDTH;
         case 3:  return POGO_ZOMBIE_WALK_ARMLESS_WIDTH;
-        default: return POGO_ZOMBIE_WALK_FULL_WIDTH;
+        default: return POGO_ZOMBIE_WALK_NO_POGO_WIDTH;
     }
 }
 
 int PogoZombie::currentWalkHeight() const {
     switch (getDamageStage()) {
         case 0:
-            if (hp <= HEADLESS_THRESHOLD) return POGO_ZOMBIE_POGO_HEADLESS_HEIGHT;
-            return POGO_ZOMBIE_POGO_FULL_HEIGHT;
-        case 2:  return POGO_ZOMBIE_WALK_HEADLESS_HEIGHT;
+            if (hp <= HEADLESS_THRESHOLD) return POGO_ZOMBIE_POGO_BOUNCE_HEIGHT;
+            return POGO_ZOMBIE_POGO_BOUNCE_HEIGHT;
+        case 2:  return POGO_ZOMBIE_WALK_ARMLESS_HEADLESS_HEIGHT;
         case 3:  return POGO_ZOMBIE_WALK_ARMLESS_HEIGHT;
-        default: return POGO_ZOMBIE_WALK_FULL_HEIGHT;
+        default: return POGO_ZOMBIE_WALK_NO_POGO_HEIGHT;
     }
 }
 
 int PogoZombie::currentFightWidth() const {
-    if (getDamageStage() >= 2) return POGO_ZOMBIE_FIGHT_HEADLESS_WIDTH;
-    return POGO_ZOMBIE_FIGHT_FULL_WIDTH;
+    if (getDamageStage() >= 2) return POGO_ZOMBIE_FIGHT_ARMLESS_HEADLESS_WIDTH;
+    return POGO_ZOMBIE_FIGHT_WIDTH;
 }
 
 int PogoZombie::currentFightHeight() const {
-    if (getDamageStage() >= 2) return POGO_ZOMBIE_FIGHT_HEADLESS_HEIGHT;
-    return POGO_ZOMBIE_FIGHT_FULL_HEIGHT;
+    if (getDamageStage() >= 2) return POGO_ZOMBIE_FIGHT_ARMLESS_HEADLESS_HEIGHT;
+    return POGO_ZOMBIE_FIGHT_HEIGHT;
 }
 
 const unsigned char* PogoZombie::currentDeathFrame(int f) const { return pogo_zombie_death_frames[f]; }

@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/SnowPeaBullet.h>
 #include <Applications/PlantsVsZombies/Zombie.h>
-#include <Applications/PlantsVsZombies/sprites/objects/snowpeabullet_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/snowpeabullet/snowpeabullet_sprite.h>
 #include <vga/vga.h>
 
 SnowPeaBullet::SnowPeaBullet(int x, int y) : Bullet(x, y) {}

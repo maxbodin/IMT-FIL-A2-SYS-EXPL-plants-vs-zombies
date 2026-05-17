@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/SnowPeashooter.h>
-#include <Applications/PlantsVsZombies/sprites/plants/snow_peashooter_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/snow_peashooter_shooting_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/snow_peashooter/snow_peashooter_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/snow_peashooter/snow_peashooter_shooting_sprite.h>
 
 SnowPeashooter::SnowPeashooter(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

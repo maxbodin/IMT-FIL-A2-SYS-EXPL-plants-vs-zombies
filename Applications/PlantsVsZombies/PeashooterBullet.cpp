@@ -1,12 +1,12 @@
 #include <Applications/PlantsVsZombies/PeashooterBullet.h>
-#include <Applications/PlantsVsZombies/sprites/objects/peabullet_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/peabullet/peabullet_sprite.h>
 #include <vga/vga.h>
 
 PeashooterBullet::PeashooterBullet(int x, int y) : Bullet(x, y) {}
 
 void PeashooterBullet::update() {
     x += SPEED;
-    if (x + PEASHOOTER_BULLET_WIDTH >= 320)
+    if (x + PEABULLET_WIDTH >= 320)
         deactivate();
 }
 

@@ -1,7 +1,7 @@
 #include <Applications/PlantsVsZombies/Garlic.h>
-#include <Applications/PlantsVsZombies/sprites/plants/garlic_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/garlic_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/garlic_very_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_very_damaged_sprite.h>
 #include <vga/vga.h>
 
 Garlic::Garlic(int x, int y) : Plant(x, y, GARLIC_HP) {}

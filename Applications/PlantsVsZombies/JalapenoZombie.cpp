@@ -1,7 +1,7 @@
 #include <Applications/PlantsVsZombies/JalapenoZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/jalapeno_zombie_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/jalapeno_zombie_fight_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/jalapeno_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/jalapeno/jalapeno_zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/jalapeno/jalapeno_zombie_fight_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/jalapeno/jalapeno_zombie_death_sprite.h>
 
 JalapenoZombie::JalapenoZombie(int x, int y, int speedBonus)
     : Zombie(x, y, JALAPENO_ZOMBIE_HP, speedBonus + SPEED_BONUS) {}
@@ -14,16 +14,16 @@ const unsigned char* JalapenoZombie::currentWalkFrame(int f) const {
 }
 
 const unsigned char* JalapenoZombie::currentFightFrame(int f) const {
-    return jalapeno_zombie_fight_frames[f];
+    return jalapeno_zombie_fight_full_frames[f];
 }
 
 int JalapenoZombie::currentWalkFrameCount() const { return JALAPENO_ZOMBIE_WALK_FRAMES; }
-int JalapenoZombie::currentFightFrameCount() const { return JALAPENO_ZOMBIE_FIGHT_FRAMES; }
+int JalapenoZombie::currentFightFrameCount() const { return JALAPENO_ZOMBIE_FIGHT_FULL_FRAMES; }
 
 int JalapenoZombie::currentWalkWidth() const { return JALAPENO_ZOMBIE_WALK_WIDTH; }
 int JalapenoZombie::currentWalkHeight() const { return JALAPENO_ZOMBIE_WALK_HEIGHT; }
-int JalapenoZombie::currentFightWidth() const { return JALAPENO_ZOMBIE_FIGHT_WIDTH; }
-int JalapenoZombie::currentFightHeight() const { return JALAPENO_ZOMBIE_FIGHT_HEIGHT; }
+int JalapenoZombie::currentFightWidth() const { return JALAPENO_ZOMBIE_FIGHT_FULL_WIDTH; }
+int JalapenoZombie::currentFightHeight() const { return JALAPENO_ZOMBIE_FIGHT_FULL_HEIGHT; }
 
 const unsigned char* JalapenoZombie::currentDeathFrame(int f) const { return jalapeno_zombie_death_frames[f]; }
 int JalapenoZombie::currentDeathFrameCount() const { return JALAPENO_ZOMBIE_DEATH_FRAMES; }

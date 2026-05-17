@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Sunflower.h>
-#include <Applications/PlantsVsZombies/sprites/plants/sunflower_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/sunflower_producing_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/sunflower/sunflower_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/sunflower/sunflower_producing_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;

@@ -1,5 +1,5 @@
 #include <Applications/PlantsVsZombies/MelonPult.h>
-#include <Applications/PlantsVsZombies/sprites/plants/melonpult_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/melonpult/melonpult_sprite.h>
 
 MelonPult::MelonPult(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

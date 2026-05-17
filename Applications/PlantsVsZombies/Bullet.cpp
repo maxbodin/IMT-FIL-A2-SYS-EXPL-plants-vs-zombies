@@ -1,20 +1,20 @@
 #include <Applications/PlantsVsZombies/Bullet.h>
 #include <Applications/PlantsVsZombies/Zombie.h>
-#include <Applications/PlantsVsZombies/sprites/objects/peabullet_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/snowpeabullet_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/peabullet_impact_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/snowpea_impact_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/cabbage_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/thorn_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/kernel_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/butter_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/cobcannon_impact_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/butter_impact_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/melon_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/melon_impact_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/wintermelon_projectile_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/wintermelon_impact_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/fire_pea_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/peabullet/peabullet_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/snowpeabullet/snowpeabullet_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/peabullet/peabullet_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/snowpea/snowpea_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/cabbage/cabbage_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/thorn/thorn_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/kernel/kernel_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/butter/butter_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/cobcannon/cobcannon_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/butter/butter_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/melon/melon_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/melon/melon_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/wintermelon/wintermelon_projectile_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/wintermelon/wintermelon_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/fire_pea/fire_pea_sprite.h>
 #include <vga/vga.h>
 
 /* Damage values per bullet type. */

@@ -1,7 +1,7 @@
 #include <Applications/PlantsVsZombies/CherryBomb.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb_attacking_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb_explosion_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_explosion_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;

@@ -1,15 +1,12 @@
 #include <Applications/PlantsVsZombies/BackupDancerZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_walk_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_walk_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_walk_no_arm_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_fight_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_fight_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_fight_no_arm_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_dance_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_dance_walk_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_dance_walk_no_arm_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_rising_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_walk_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_fight_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_fight_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_dance_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_dance_walk_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_rising_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/backupdancer/backupdancer_zombie_death_sprite.h>
 #include <vga/vga.h>
 
 BackupDancerZombie::BackupDancerZombie(int x, int y, int speedBonus)
@@ -65,24 +62,24 @@ int BackupDancerZombie::getHeight() const { return BACKUPDANCER_ZOMBIE_WALK_FULL
 
 const unsigned char* BackupDancerZombie::currentWalkFrame(int f) const {
     switch (getDamageStage()) {
-        case 1:  return backupdancer_zombie_dance_walk_damaged_frames[f % BACKUPDANCER_ZOMBIE_DANCE_WALK_DAMAGED_FRAMES];
+        case 1:  return backupdancer_zombie_dance_walk_no_arm_frames[f % BACKUPDANCER_ZOMBIE_DANCE_WALK_NO_ARM_FRAMES];
         case 2:  return backupdancer_zombie_dance_walk_no_arm_frames[f % BACKUPDANCER_ZOMBIE_DANCE_WALK_NO_ARM_FRAMES];
-        default: return backupdancer_zombie_dance_walk_frames[f % BACKUPDANCER_ZOMBIE_DANCE_WALK_FRAMES];
+        default: return backupdancer_zombie_dance_walk_full_frames[f % BACKUPDANCER_ZOMBIE_DANCE_WALK_FULL_FRAMES];
     }
 }
 
 const unsigned char* BackupDancerZombie::currentFightFrame(int f) const {
     switch (getDamageStage()) {
-        case 1:  return backupdancer_zombie_fight_damaged_frames[f];
+        case 1:  return backupdancer_zombie_fight_no_arm_frames[f];
         case 2:  return backupdancer_zombie_fight_no_arm_frames[f];
         default: return backupdancer_zombie_fight_full_frames[f];
     }
 }
 
-int BackupDancerZombie::currentWalkFrameCount() const { return BACKUPDANCER_ZOMBIE_DANCE_WALK_FRAMES; }
+int BackupDancerZombie::currentWalkFrameCount() const { return BACKUPDANCER_ZOMBIE_DANCE_WALK_FULL_FRAMES; }
 int BackupDancerZombie::currentFightFrameCount() const { return BACKUPDANCER_ZOMBIE_FIGHT_FULL_FRAMES; }
-int BackupDancerZombie::currentWalkWidth() const { return BACKUPDANCER_ZOMBIE_DANCE_WALK_WIDTH; }
-int BackupDancerZombie::currentWalkHeight() const { return BACKUPDANCER_ZOMBIE_DANCE_WALK_HEIGHT; }
+int BackupDancerZombie::currentWalkWidth() const { return BACKUPDANCER_ZOMBIE_DANCE_WALK_FULL_WIDTH; }
+int BackupDancerZombie::currentWalkHeight() const { return BACKUPDANCER_ZOMBIE_DANCE_WALK_FULL_HEIGHT; }
 int BackupDancerZombie::currentFightWidth() const { return BACKUPDANCER_ZOMBIE_FIGHT_FULL_WIDTH; }
 int BackupDancerZombie::currentFightHeight() const { return BACKUPDANCER_ZOMBIE_FIGHT_FULL_HEIGHT; }
 

@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/GatlingPea.h>
-#include <Applications/PlantsVsZombies/sprites/plants/gatlingpea_idle_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/gatlingpea_shooting_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/gatlingpea/gatlingpea_idle_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/gatlingpea/gatlingpea_shooting_sprite.h>
 
 GatlingPea::GatlingPea(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY, 24) {}

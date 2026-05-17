@@ -1,7 +1,7 @@
 #include <Applications/PlantsVsZombies/JackInTheBoxZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/jackinthebox_zombie_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/jackinthebox_zombie_fight_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/jackinthebox_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/jackinthebox/jackinthebox_zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/jackinthebox/jackinthebox_zombie_fight_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/jackinthebox/jackinthebox_zombie_death_headless_sprite.h>
 
 JackInTheBoxZombie::JackInTheBoxZombie(int x, int y, int speedBonus)
     : Zombie(x, y, JACK_HP, speedBonus + SPEED_BONUS),
@@ -36,8 +36,8 @@ int JackInTheBoxZombie::currentWalkHeight() const { return JACKINTHEBOX_ZOMBIE_W
 int JackInTheBoxZombie::currentFightWidth() const { return JACKINTHEBOX_ZOMBIE_FIGHT_WIDTH; }
 int JackInTheBoxZombie::currentFightHeight() const { return JACKINTHEBOX_ZOMBIE_FIGHT_HEIGHT; }
 
-const unsigned char* JackInTheBoxZombie::currentDeathFrame(int f) const { return jackinthebox_zombie_death_frames[f]; }
-int JackInTheBoxZombie::currentDeathFrameCount() const { return JACKINTHEBOX_ZOMBIE_DEATH_FRAMES; }
-int JackInTheBoxZombie::currentDeathWidth() const { return JACKINTHEBOX_ZOMBIE_DEATH_WIDTH; }
-int JackInTheBoxZombie::currentDeathHeight() const { return JACKINTHEBOX_ZOMBIE_DEATH_HEIGHT; }
+const unsigned char* JackInTheBoxZombie::currentDeathFrame(int f) const { return jackinthebox_zombie_death_headless_frames[f]; }
+int JackInTheBoxZombie::currentDeathFrameCount() const { return JACKINTHEBOX_ZOMBIE_DEATH_HEADLESS_FRAMES; }
+int JackInTheBoxZombie::currentDeathWidth() const { return JACKINTHEBOX_ZOMBIE_DEATH_HEADLESS_WIDTH; }
+int JackInTheBoxZombie::currentDeathHeight() const { return JACKINTHEBOX_ZOMBIE_DEATH_HEADLESS_HEIGHT; }
 bool JackInTheBoxZombie::hasDeathAnimation() const { return true; }

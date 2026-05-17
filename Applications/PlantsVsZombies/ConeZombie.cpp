@@ -1,13 +1,11 @@
 #include <Applications/PlantsVsZombies/ConeZombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_walk_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_walk_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_walk_no_cone_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_fight_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_fight_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_fight_no_cone_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_death_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_death_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_death_no_cone_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone/cone_zombie_walk_cone_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone/cone_zombie_walk_cone_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone/cone_zombie_fight_cone_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone/cone_zombie_fight_cone_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_fight_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_death_sprite.h>
 #include <Applications/PlantsVsZombies/Grid.h>
 
 extern volatile int compt;
@@ -43,41 +41,41 @@ void ConeZombie::onUpdate() {
     }
 }
 
-int ConeZombie::getWidth()  const { return CONE_ZOMBIE_WALK_FULL_WIDTH; }
-int ConeZombie::getHeight() const { return CONE_ZOMBIE_WALK_FULL_HEIGHT; }
+int ConeZombie::getWidth()  const { return CONE_ZOMBIE_WALK_CONE_FULL_WIDTH; }
+int ConeZombie::getHeight() const { return CONE_ZOMBIE_WALK_CONE_FULL_HEIGHT; }
 
 const unsigned char* ConeZombie::currentWalkFrame(int f) const {
     switch (getDamageStage()) {
-        case 1:  return cone_zombie_walk_damaged_frames[f];
-        case 2:  return cone_zombie_walk_no_cone_frames[f];
-        default: return cone_zombie_walk_full_frames[f];
+        case 1:  return cone_zombie_walk_cone_damaged_frames[f];
+        case 2:  return basic_zombie_walk_full_frames[f];
+        default: return cone_zombie_walk_cone_full_frames[f];
     }
 }
 
 const unsigned char* ConeZombie::currentFightFrame(int f) const {
     switch (getDamageStage()) {
-        case 1:  return cone_zombie_fight_damaged_frames[f];
-        case 2:  return cone_zombie_fight_no_cone_frames[f];
-        default: return cone_zombie_fight_full_frames[f];
+        case 1:  return cone_zombie_fight_cone_damaged_frames[f];
+        case 2:  return basic_zombie_fight_full_frames[f];
+        default: return cone_zombie_fight_cone_full_frames[f];
     }
 }
 
-int ConeZombie::currentWalkFrameCount() const { return CONE_ZOMBIE_WALK_FULL_FRAMES; }
-int ConeZombie::currentFightFrameCount() const { return CONE_ZOMBIE_FIGHT_FULL_FRAMES; }
-int ConeZombie::currentWalkWidth() const { return CONE_ZOMBIE_WALK_FULL_WIDTH; }
-int ConeZombie::currentWalkHeight() const { return CONE_ZOMBIE_WALK_FULL_HEIGHT; }
-int ConeZombie::currentFightWidth() const { return CONE_ZOMBIE_FIGHT_FULL_WIDTH; }
-int ConeZombie::currentFightHeight() const { return CONE_ZOMBIE_FIGHT_FULL_HEIGHT; }
+int ConeZombie::currentWalkFrameCount() const { return CONE_ZOMBIE_WALK_CONE_FULL_FRAMES; }
+int ConeZombie::currentFightFrameCount() const { return CONE_ZOMBIE_FIGHT_CONE_FULL_FRAMES; }
+int ConeZombie::currentWalkWidth() const { return CONE_ZOMBIE_WALK_CONE_FULL_WIDTH; }
+int ConeZombie::currentWalkHeight() const { return CONE_ZOMBIE_WALK_CONE_FULL_HEIGHT; }
+int ConeZombie::currentFightWidth() const { return CONE_ZOMBIE_FIGHT_CONE_FULL_WIDTH; }
+int ConeZombie::currentFightHeight() const { return CONE_ZOMBIE_FIGHT_CONE_FULL_HEIGHT; }
 
 const unsigned char* ConeZombie::currentDeathFrame(int f) const {
     switch (getDamageStage()) {
-        case 1:  return cone_zombie_death_damaged_frames[f];
-        case 2:  return cone_zombie_death_no_cone_frames[f];
-        default: return cone_zombie_death_full_frames[f];
+        case 1:  return basic_zombie_death_frames[f];
+        case 2:  return basic_zombie_death_frames[f];
+        default: return basic_zombie_death_frames[f];
     }
 }
 
-int ConeZombie::currentDeathFrameCount() const { return CONE_ZOMBIE_DEATH_FULL_FRAMES; }
-int ConeZombie::currentDeathWidth() const { return CONE_ZOMBIE_DEATH_FULL_WIDTH; }
-int ConeZombie::currentDeathHeight() const { return CONE_ZOMBIE_DEATH_FULL_HEIGHT; }
+int ConeZombie::currentDeathFrameCount() const { return BASIC_ZOMBIE_DEATH_FRAMES; }
+int ConeZombie::currentDeathWidth() const { return BASIC_ZOMBIE_DEATH_WIDTH; }
+int ConeZombie::currentDeathHeight() const { return BASIC_ZOMBIE_DEATH_HEIGHT; }
 bool ConeZombie::hasDeathAnimation() const { return true; }

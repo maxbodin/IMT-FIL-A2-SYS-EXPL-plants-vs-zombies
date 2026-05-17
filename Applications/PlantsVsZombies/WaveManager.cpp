@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/WaveManager.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/basic_zombie_walk_full_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/cone_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone/cone_zombie_walk_cone_full_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/start_text_sprite.h>
 #include <vga/vga.h>
 
@@ -124,7 +124,7 @@ Zombie* WaveManager::update() {
     } else if (wave >= 2 && roll < 69) {
         z = new BucketheadZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
     } else if (wave >= 2 && roll < 84) {
-        z = new ConeZombie(320 - CONE_ZOMBIE_WALK_FULL_WIDTH, laneCenter - CONE_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+        z = new ConeZombie(320 - CONE_ZOMBIE_WALK_CONE_FULL_WIDTH, laneCenter - CONE_ZOMBIE_WALK_CONE_FULL_HEIGHT, speedBonus);
     } else {
         z = new Zombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
     }

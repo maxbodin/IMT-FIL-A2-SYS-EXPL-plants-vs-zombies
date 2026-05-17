@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/SplitPea.h>
-#include <Applications/PlantsVsZombies/sprites/plants/splitpea_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/splitpea_shooting_both_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/splitpea/splitpea_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/splitpea/splitpea_shooting_both_sprite.h>
 
 SplitPea::SplitPea(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}

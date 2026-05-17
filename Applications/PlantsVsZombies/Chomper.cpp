@@ -1,8 +1,8 @@
 #include <Applications/PlantsVsZombies/Chomper.h>
 #include <Applications/PlantsVsZombies/Grid.h>
-#include <Applications/PlantsVsZombies/sprites/plants/chomper_idle_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/chomper_attacking_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/chomper_chewing_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/chomper/chomper_idle_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/chomper/chomper_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/chomper/chomper_chewing_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;

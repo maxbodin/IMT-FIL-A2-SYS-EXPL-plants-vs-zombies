@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Repeater.h>
-#include <Applications/PlantsVsZombies/sprites/plants/reapeater_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/reapeater_shooting_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/reapeater/reapeater_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/reapeater/reapeater_shooting_sprite.h>
 
 static const int SECOND_SHOT_GAP = 12;
 

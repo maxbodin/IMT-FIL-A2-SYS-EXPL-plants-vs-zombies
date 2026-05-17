@@ -1,7 +1,7 @@
 #include <Applications/PlantsVsZombies/WallNut.h>
-#include <Applications/PlantsVsZombies/sprites/plants/wallnut_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/wallnut_damaged_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/wallnut_very_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/wallnut/wallnut_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/wallnut/wallnut_damaged_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/wallnut/wallnut_very_damaged_sprite.h>
 #include <vga/vga.h>
 
 WallNut::WallNut(int x, int y) : Plant(x, y, WALLNUT_HP) {}

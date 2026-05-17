@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Marigold.h>
-#include <Applications/PlantsVsZombies/sprites/plants/marigold_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/marigold_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/marigold/marigold_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/marigold/marigold_attacking_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;
