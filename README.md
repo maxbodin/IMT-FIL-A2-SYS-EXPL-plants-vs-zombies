@@ -1,4 +1,28 @@
-# Plants vs Zombies, Sextant OS
+<div style="page-break-after: always; text-align: center; padding-top: 60px;">
+
+<img src="IMT_Atlantique.svg.png" alt="IMT Atlantique" width="320" />
+
+<br/><br/><br/>
+
+<img src="assets/sprites/sources/ui/pvz_titlescreen-title.png" alt="Plants vs Zombies" width="500" />
+
+<br/><br/><br/>
+
+<h1 style="border: none; font-size: 28px;">Plants vs Zombies - Sextant OS</h1>
+
+<h3 style="font-weight: normal; color: #555;">Projet Systèmes d'Exploitation</h3>
+
+<h3 style="font-weight: normal; color: #555;">FIL-A2-Sys-expl</h3>
+
+<br/>
+
+<p style="font-size: 16px;"><strong>Auteurs :</strong> Nathan Marie - Mathilde Burgevin - Maxime Bodin</p>
+
+<p style="font-size: 14px; color: #777;">FIL A2</p>
+
+</div>
+
+# Plants vs Zombies - Sextant OS
 **Auteurs : Nathan Marie - Mathilde Burgevin - Maxime Bodin**
 
 ## 1. Introduction
@@ -313,7 +337,7 @@ Les sprites (32×32 pixels, multi-frames pour l'animation) sont générés à pa
 
 Ce projet démontre qu'il est possible d'implémenter un jeu vidéo complet et jouable directement sur un noyau bare-metal x86, en respectant les contraintes d'un système temps réel : gestion matérielle directe, absence de bibliothèque standard, et primitives de synchronisation écrites à la main.
 
-Les choix techniques — ordonnancement coopératif Round-Robin, sémaphore producteur/consommateur pour la synchronisation logique/rendu, spinlocks atomiques pour les structures partagées, et object pooling pour les allocations fréquentes — répondent chacun à un problème concret identifié lors du développement. Le modèle à deux threads (logique + rendu) avec signalisation par sémaphore offre une séparation claire des responsabilités tout en garantissant une cadence stable de ~62 FPS.
+Les choix techniques, ordonnancement coopératif Round-Robin, sémaphore producteur/consommateur pour la synchronisation logique/rendu, spinlocks atomiques pour les structures partagées, et object pooling pour les allocations fréquentes, répondent chacun à un problème concret identifié lors du développement. Le modèle à deux threads (logique + rendu) avec signalisation par sémaphore offre une séparation claire des responsabilités tout en garantissant une cadence stable de ~62 FPS.
 
 Le mode VGA 13h, bien que limité en résolution (320×200), s'est révélé adapté au genre tower-defense : la grille 9×5 cases de 32 pixels offre un espace de jeu lisible, et la palette de 256 couleurs permet des sprites expressifs avec des variantes de dégâts progressifs. Le double buffering élimine le tearing sans nécessiter de mécanisme complexe de synchronisation verticale.
 
