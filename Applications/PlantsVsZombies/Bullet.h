@@ -3,16 +3,20 @@
 
 class Zombie;
 
-enum BulletType { BULLET_PEASHOOTER, BULLET_FIRE_PEA, BULLET_SNOW_PEA, BULLET_CABBAGE, BULLET_THORN, BULLET_KERNEL, BULLET_BUTTER, BULLET_COB, BULLET_MELON, BULLET_WINTER_MELON };
+enum BulletType { BULLET_PEASHOOTER, BULLET_FIRE_PEA, BULLET_SNOW_PEA, BULLET_CABBAGE, BULLET_THORN, BULLET_KERNEL, BULLET_BUTTER, BULLET_COB, BULLET_MELON, BULLET_WINTER_MELON, BULLET_BALL };
 
 class Bullet {
 public:
     Bullet();
 
     void init(int x, int y, BulletType type);
+    void initTargeted(int x, int y, int targetX, BulletType type);
     void update();
     void render();
     void onHit(Zombie& target);
+    bool isAoE() const;
+    int getAoeRadius() const;
+    bool consumeAoE();
 
     bool isActive() const;
     bool isImpacting() const;
@@ -50,6 +54,9 @@ private:
     int projectileAnimTick;
     int direction;
     bool torchUpgraded;
+    int targetX;
+    bool targeted;
+    bool aoeApplied;
 };
 
 #endif

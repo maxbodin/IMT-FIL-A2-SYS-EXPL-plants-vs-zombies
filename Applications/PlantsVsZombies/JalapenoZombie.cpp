@@ -8,6 +8,7 @@ JalapenoZombie::JalapenoZombie(int x, int y, int speedBonus)
 
 int JalapenoZombie::getWidth()  const { return JALAPENO_ZOMBIE_WALK_WIDTH; }
 int JalapenoZombie::getHeight() const { return JALAPENO_ZOMBIE_WALK_HEIGHT; }
+bool JalapenoZombie::appliesFireToPlant() const { return true; }
 
 const unsigned char* JalapenoZombie::currentWalkFrame(int f) const {
     return jalapeno_zombie_walk_frames[f];

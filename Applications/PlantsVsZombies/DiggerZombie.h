@@ -15,6 +15,7 @@ public:
     void render() override;
 
     bool canBeBlocked() const override;
+    bool isInvulnerable() const override;
 
     int getWidth()  const override;
     int getHeight() const override;

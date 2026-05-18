@@ -66,12 +66,21 @@ void CactusPlant::render() {
                     CACTUS_GROWING_WIDTH, CACTUS_GROWING_HEIGHT, x, gy);
         renderHpBar(CACTUS_GROWING_WIDTH / 2, CACTUS_GROWING_HEIGHT + (y - gy));
     } else if (extended) {
-        /* While extended, show the last growing frame (fully tall). */
+        /* While extended and shooting, play attack animation at tall height. */
         int gy = y + CACTUS_HEIGHT - CACTUS_GROWING_HEIGHT;
-        int f = CACTUS_GROWING_FRAMES - 1;
-        draw_sprite(cactus_growing_frames[f],
-                    CACTUS_GROWING_WIDTH, CACTUS_GROWING_HEIGHT, x, gy);
-        renderHpBar(CACTUS_GROWING_WIDTH / 2, CACTUS_GROWING_HEIGHT + (y - gy));
+        if (shooting && shootingSpriteCount() > 0) {
+            int w = shootingSpriteWidth();
+            int h = shootingSpriteHeight();
+            int rx = x + (CACTUS_GROWING_WIDTH - w) / 2;
+            int ry = gy + CACTUS_GROWING_HEIGHT - h;
+            draw_sprite(shootingSprite(shootIdx), w, h, rx, ry);
+            renderHpBar(w / 2, CACTUS_GROWING_HEIGHT + (y - gy));
+        } else {
+            int f = CACTUS_GROWING_FRAMES - 1;
+            draw_sprite(cactus_growing_frames[f],
+                        CACTUS_GROWING_WIDTH, CACTUS_GROWING_HEIGHT, x, gy);
+            renderHpBar(CACTUS_GROWING_WIDTH / 2, CACTUS_GROWING_HEIGHT + (y - gy));
+        }
     } else {
         ShooterPlant::render();
     }

@@ -5,15 +5,17 @@
 
 class YetiZombie : public Zombie {
 public:
-    static const int YETI_HP           = 1500;
-    static const int DAMAGED_THRESHOLD = 1000;
-    static const int HEADLESS_THRESHOLD = 500;
-    static const int NO_ARM_THRESHOLD   = 200;
+    static const int YETI_HP            = 2500;
+    static const int DAMAGED_THRESHOLD  = 1800;
+    static const int HEADLESS_THRESHOLD = 1000;
+    static const int NO_ARM_THRESHOLD   = 400;
+    static const int ATTACK_MULTIPLIER  = 3;
 
     YetiZombie(int x, int y, int speedBonus = 0);
 
     int getWidth()  const override;
     int getHeight() const override;
+    int getAttackDamage() const override;
 
 protected:
     const unsigned char* currentWalkFrame(int f) const override;

@@ -1,12 +1,33 @@
 #include <Applications/PlantsVsZombies/CatapultZombie.h>
 #include <Applications/PlantsVsZombies/sprites/zombies/catapult/catapult_zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/catapult/catapult_zombie_launch_sequence_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/Grid.h>
 
 CatapultZombie::CatapultZombie(int x, int y, int speedBonus)
-    : Zombie(x, y, CATAPULT_HP, speedBonus + SPEED_BONUS), crushCooldown(0) {}
+    : Zombie(x, y, CATAPULT_HP, speedBonus + SPEED_BONUS),
+      crushCooldown(0), throwCooldown(THROW_COOLDOWN / 2),
+      throwing(false), throwFrame(0), throwAnimTick(0),
+      ballReady(false), ballTargetX(0) {}
 
 void CatapultZombie::onUpdate() {
     if (crushCooldown > 0) crushCooldown--;
+    if (throwCooldown > 0) throwCooldown--;
+
+    if (throwing) {
+        if (++throwAnimTick >= THROW_ANIM_SPEED) {
+            throwAnimTick = 0;
+            throwFrame++;
+            if (throwFrame == CATAPULT_ZOMBIE_LAUNCH_SEQUENCE_FRAMES / 2) {
+                ballReady = true;
+            }
+            if (throwFrame >= CATAPULT_ZOMBIE_LAUNCH_SEQUENCE_FRAMES) {
+                throwing = false;
+                throwFrame = 0;
+                throwCooldown = THROW_COOLDOWN;
+            }
+        }
+    }
 }
 
 bool CatapultZombie::canCrush() const {
@@ -15,6 +36,31 @@ bool CatapultZombie::canCrush() const {
 
 void CatapultZombie::resetCrushCooldown() {
     crushCooldown = CRUSH_COOLDOWN;
+}
+
+bool CatapultZombie::canThrow() const {
+    return state != DYING && state != DEAD && !throwing && throwCooldown == 0;
+}
+
+void CatapultZombie::startThrow() {
+    throwing = true;
+    throwFrame = 0;
+    throwAnimTick = 0;
+    ballReady = false;
+    ballTargetX = x - (Grid::TILE_SIZE * 2 + Grid::TILE_SIZE / 2);
+    if (ballTargetX < Grid::OFFSET_X) ballTargetX = Grid::OFFSET_X;
+}
+
+bool CatapultZombie::hasBallReady() const {
+    return ballReady;
+}
+
+void CatapultZombie::consumeBall() {
+    ballReady = false;
+}
+
+int CatapultZombie::getBallTargetY() const {
+    return y + getHeight() / 2;
 }
 
 int CatapultZombie::getWidth()  const { return CATAPULT_ZOMBIE_WALK_WIDTH; }

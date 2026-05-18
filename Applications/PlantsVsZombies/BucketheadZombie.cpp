@@ -42,12 +42,42 @@ const unsigned char* BucketheadZombie::currentFightFrame(int f) const {
     }
 }
 
-int BucketheadZombie::currentWalkFrameCount()  const { return BUCKETHEAD_ZOMBIE_WALK_FULL_FRAMES; }
-int BucketheadZombie::currentFightFrameCount() const { return BUCKETHEAD_ZOMBIE_FIGHT_FULL_FRAMES; }
-int BucketheadZombie::currentWalkWidth()  const { return BUCKETHEAD_ZOMBIE_WALK_FULL_WIDTH; }
-int BucketheadZombie::currentWalkHeight() const { return BUCKETHEAD_ZOMBIE_WALK_FULL_HEIGHT; }
-int BucketheadZombie::currentFightWidth()  const { return BUCKETHEAD_ZOMBIE_FIGHT_FULL_WIDTH; }
-int BucketheadZombie::currentFightHeight() const { return BUCKETHEAD_ZOMBIE_FIGHT_FULL_HEIGHT; }
+int BucketheadZombie::currentWalkFrameCount() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_WALK_FULL_FRAMES;
+    return BUCKETHEAD_ZOMBIE_WALK_FULL_FRAMES;
+}
+int BucketheadZombie::currentFightFrameCount() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_FIGHT_FULL_FRAMES;
+    return BUCKETHEAD_ZOMBIE_FIGHT_FULL_FRAMES;
+}
+int BucketheadZombie::currentWalkWidth() const {
+    switch (getDamageStage()) {
+        case 1:  return BUCKETHEAD_ZOMBIE_WALK_BUCKET_DAMAGED_WIDTH;
+        case 2:  return BASIC_ZOMBIE_WALK_FULL_WIDTH;
+        default: return BUCKETHEAD_ZOMBIE_WALK_FULL_WIDTH;
+    }
+}
+int BucketheadZombie::currentWalkHeight() const {
+    switch (getDamageStage()) {
+        case 1:  return BUCKETHEAD_ZOMBIE_WALK_BUCKET_DAMAGED_HEIGHT;
+        case 2:  return BASIC_ZOMBIE_WALK_FULL_HEIGHT;
+        default: return BUCKETHEAD_ZOMBIE_WALK_FULL_HEIGHT;
+    }
+}
+int BucketheadZombie::currentFightWidth() const {
+    switch (getDamageStage()) {
+        case 1:  return BUCKETHEAD_ZOMBIE_FIGHT_BUCKET_DAMAGED_WIDTH;
+        case 2:  return BASIC_ZOMBIE_FIGHT_FULL_WIDTH;
+        default: return BUCKETHEAD_ZOMBIE_FIGHT_FULL_WIDTH;
+    }
+}
+int BucketheadZombie::currentFightHeight() const {
+    switch (getDamageStage()) {
+        case 1:  return BUCKETHEAD_ZOMBIE_FIGHT_BUCKET_DAMAGED_HEIGHT;
+        case 2:  return BASIC_ZOMBIE_FIGHT_FULL_HEIGHT;
+        default: return BUCKETHEAD_ZOMBIE_FIGHT_FULL_HEIGHT;
+    }
+}
 
 const unsigned char* BucketheadZombie::currentDeathFrame(int f) const {
     switch (getDamageStage()) {

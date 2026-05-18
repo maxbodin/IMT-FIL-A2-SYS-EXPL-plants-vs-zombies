@@ -1,4 +1,5 @@
 #include <Applications/PlantsVsZombies/ShooterPlant.h>
+#include <Applications/PlantsVsZombies/Grid.h>
 #include <vga/vga.h>
 
 ShooterPlant::ShooterPlant(int x, int y, int hp, int shootDelay, int shootHold)
@@ -40,12 +41,16 @@ void ShooterPlant::render() {
     if (shooting && shootingSpriteCount() > 0) {
         int w = shootingSpriteWidth();
         int h = shootingSpriteHeight();
-        draw_sprite(shootingSprite(shootIdx), w, h, x, y);
+        int rx = x + (Grid::TILE_SIZE - w) / 2;
+        int ry = y + Grid::TILE_SIZE - h;
+        draw_sprite(shootingSprite(shootIdx), w, h, rx, ry);
         renderHpBar(w / 2, h);
     } else {
         int w = spriteWidth();
         int h = spriteHeight();
-        draw_sprite(idleFrame(frame), w, h, x, y);
+        int rx = x + (Grid::TILE_SIZE - w) / 2;
+        int ry = y + Grid::TILE_SIZE - h;
+        draw_sprite(idleFrame(frame), w, h, rx, ry);
         renderHpBar(w / 2, h);
     }
 }

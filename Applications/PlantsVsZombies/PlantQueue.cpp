@@ -76,7 +76,13 @@ PlantType PlantQueue::randomPlantType() {
         case 13: return PLANT_GARLIC;
         case 14: return PLANT_KERNELPULT;
         case 15: return PLANT_MARIGOLD;
-        default: return PLANT_MELONPULT;
+        case 16: return PLANT_MELONPULT;
+        case 17: return PLANT_REPEATER;
+        case 18: return PLANT_SPLITPEA;
+        case 19: return PLANT_SQUASH;
+        case 20: return PLANT_THREEPEATER;
+        case 21: return PLANT_TORCHWOOD;
+        default: return PLANT_TWINSUNFLOWER;
     }
 }
 

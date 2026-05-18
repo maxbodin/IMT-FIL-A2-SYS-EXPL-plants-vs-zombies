@@ -6,12 +6,15 @@
 class PoleVaultingZombie : public Zombie {
 public:
     static const int VAULT_HP    = 300;
-    static const int SPEED_BONUS = 3;   // fast runner
+    static const int SPEED_BONUS = 5;   // fast runner
     static const int VAULT_ANIM_SPEED = 6;
 
     PoleVaultingZombie(int x, int y, int speedBonus = 0);
 
     bool canBeBlocked() const override;
+    void onPlantContact() override;
+    bool isVaulting() const { return vaulting; }
+    bool hasFinishedVault() const { return hasVaulted; }
 
     int getWidth()  const override;
     int getHeight() const override;
@@ -39,6 +42,7 @@ private:
     bool vaulting;
     int vaultFrame;
     int vaultAnimTick;
+    int savedSpeedBonus;
 };
 
 #endif

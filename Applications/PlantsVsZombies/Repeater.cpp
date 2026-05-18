@@ -2,7 +2,7 @@
 #include <Applications/PlantsVsZombies/sprites/plants/reapeater/reapeater_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/reapeater/reapeater_shooting_sprite.h>
 
-static const int SECOND_SHOT_GAP = 12;
+static const int SECOND_SHOT_GAP = 20;
 
 Repeater::Repeater(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY), secondShotDelay(0) {}

@@ -25,6 +25,7 @@ void YetiZombie::onUpdate() {
 
 int YetiZombie::getWidth()  const { return YETI_ZOMBIE_WALK_FULL_WIDTH; }
 int YetiZombie::getHeight() const { return YETI_ZOMBIE_WALK_FULL_HEIGHT; }
+int YetiZombie::getAttackDamage() const { return ATTACK_MULTIPLIER; }
 
 const unsigned char* YetiZombie::currentWalkFrame(int f) const {
     switch (getDamageStage()) {

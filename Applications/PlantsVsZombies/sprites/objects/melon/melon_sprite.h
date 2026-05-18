@@ -1,10 +1,10 @@
-#ifndef MELON_ANIM_H
-#define MELON_ANIM_H
+#ifndef MELON_SPRITE_H
+#define MELON_SPRITE_H
 
 #define MELON_WIDTH  23
 #define MELON_HEIGHT 19
-#define MELON_FRAMES 1
 
-extern unsigned char melon_frames[MELON_FRAMES][MELON_WIDTH*MELON_HEIGHT];
+extern unsigned char melon_palette[256][3];
+extern unsigned char melon_sprite_data[MELON_WIDTH*MELON_HEIGHT];
 
 #endif

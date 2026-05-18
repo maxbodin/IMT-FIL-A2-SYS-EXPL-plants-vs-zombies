@@ -7,7 +7,7 @@
 #include <Applications/PlantsVsZombies/sprites/zombies/disco/disco_zombie_death_sprite.h>
 
 DiscoZombie::DiscoZombie(int x, int y, int speedBonus)
-    : Zombie(x, y, DISCO_HP, speedBonus), summonTriggered(false),
+    : Zombie(x, y, DISCO_HP, speedBonus + SPEED_BONUS), summonCount(0),
       summonPending(false), dancing(true), lastDamageStage(0) {}
 
 int DiscoZombie::getDamageStage() const {
@@ -23,12 +23,6 @@ void DiscoZombie::onUpdate() {
     else if (hp > ARMLESS_THRESHOLD)      lastDamageStage = 1;
     else if (hp > ARMLESS_HEADLESS_THRESHOLD) lastDamageStage = 2;
     else lastDamageStage = 3;
-
-    if (!summonTriggered && x <= SUMMON_X) {
-        summonTriggered = true;
-        summonPending   = true;
-        dancing         = false; // stop dancing after summoning
-    }
 }
 
 int DiscoZombie::getWidth()  const { return DISCO_ZOMBIE_WALK_WIDTH; }
@@ -62,16 +56,24 @@ int DiscoZombie::currentFightFrameCount() const { return DISCO_ZOMBIE_FIGHT_FRAM
 
 int DiscoZombie::currentWalkWidth() const {
     if (dancing) return DISCO_ZOMBIE_DANCE_WALK_FULL_WIDTH;
+    if (getDamageStage() >= 1) return DISCO_ZOMBIE_WALK_ARMLESS_HEADLESS_WIDTH;
     return DISCO_ZOMBIE_WALK_WIDTH;
 }
 
 int DiscoZombie::currentWalkHeight() const {
     if (dancing) return DISCO_ZOMBIE_DANCE_WALK_FULL_HEIGHT;
+    if (getDamageStage() >= 1) return DISCO_ZOMBIE_WALK_ARMLESS_HEADLESS_HEIGHT;
     return DISCO_ZOMBIE_WALK_HEIGHT;
 }
 
-int DiscoZombie::currentFightWidth() const { return DISCO_ZOMBIE_FIGHT_WIDTH; }
-int DiscoZombie::currentFightHeight() const { return DISCO_ZOMBIE_FIGHT_HEIGHT; }
+int DiscoZombie::currentFightWidth() const {
+    if (getDamageStage() >= 1) return DISCO_ZOMBIE_FIGHT_ARMLESS_HEADLESS_WIDTH;
+    return DISCO_ZOMBIE_FIGHT_WIDTH;
+}
+int DiscoZombie::currentFightHeight() const {
+    if (getDamageStage() >= 1) return DISCO_ZOMBIE_FIGHT_ARMLESS_HEADLESS_HEIGHT;
+    return DISCO_ZOMBIE_FIGHT_HEIGHT;
+}
 
 const unsigned char* DiscoZombie::currentDeathFrame(int f) const { return disco_zombie_death_frames[f]; }
 int DiscoZombie::currentDeathFrameCount() const { return DISCO_ZOMBIE_DEATH_FRAMES; }
@@ -79,5 +81,15 @@ int DiscoZombie::currentDeathWidth() const { return DISCO_ZOMBIE_DEATH_WIDTH; }
 int DiscoZombie::currentDeathHeight() const { return DISCO_ZOMBIE_DEATH_HEIGHT; }
 bool DiscoZombie::hasDeathAnimation() const { return true; }
 
-bool DiscoZombie::hasPendingSummon() const { return summonPending; }
-void DiscoZombie::consumeSummon() { summonPending = false; }
+bool DiscoZombie::hasPendingSummon() const {
+    if (summonCount >= MAX_SUMMONS) return false;
+    if (summonCount == 0) return true;
+    if (state == DYING || state == DEAD) return true;
+    if (x < SUMMON_X) return true;
+    return false;
+}
+void DiscoZombie::consumeSummon() {
+    summonCount++;
+    summonPending = false;
+    if (summonCount >= MAX_SUMMONS) dancing = false;
+}

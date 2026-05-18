@@ -28,10 +28,20 @@ void WaveManager::reset() {
 }
 
 int WaveManager::zombiesForWave(int w) const {
-    // Linear scaling: BASE_ZOMBIES at wave 1, MAX_ZOMBIES at MAX_WAVE
+    // Sub-linear (sqrt-ish) scaling for gradual difficulty ramp
+    // Approximation: base + range * isqrt(w-1) / isqrt(MAX_WAVE-1)
     if (w <= 1) return BASE_ZOMBIES;
-    if (w >= MAX_WAVE) return MAX_ZOMBIES;
-    return BASE_ZOMBIES + (w - 1) * (MAX_ZOMBIES - BASE_ZOMBIES) / (MAX_WAVE - 1);
+    if (w >= MAX_WAVE) return WAVE_MAX_ZOMBIES;
+    int range = WAVE_MAX_ZOMBIES - BASE_ZOMBIES;
+    // Integer sqrt via iterative approximation
+    int n = w - 1;
+    int maxN = MAX_WAVE - 1;
+    // Scale n to 0..100 range for precision, then sqrt
+    int scaled = n * 100 / maxN; // 0..100
+    // Integer sqrt of scaled (0..10)
+    int s = 0;
+    while ((s + 1) * (s + 1) <= scaled) s++;
+    return BASE_ZOMBIES + range * s / 10;
 }
 
 int WaveManager::randomLane() {

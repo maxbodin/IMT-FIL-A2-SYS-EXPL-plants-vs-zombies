@@ -8,7 +8,7 @@
 #include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_death_sprite.h>
 
 ScreenDoorZombie::ScreenDoorZombie(int x, int y, int speedBonus)
-    : Zombie(x, y, SCREENDOOR_HP, speedBonus), lastDamageStage(0) {}
+    : Zombie(x, y, SCREENDOOR_HP, speedBonus), lastDamageStage(0), doorBroken(false) {}
 
 int ScreenDoorZombie::getDamageStage() const {
     if (state == DYING) return lastDamageStage;
@@ -20,7 +20,13 @@ int ScreenDoorZombie::getDamageStage() const {
 void ScreenDoorZombie::onUpdate() {
     if (hp > DAMAGED_THRESHOLD)       lastDamageStage = 0;
     else if (hp > NO_DOOR_THRESHOLD)  lastDamageStage = 1;
-    else                              lastDamageStage = 2;
+    else {
+        if (!doorBroken) {
+            doorBroken = true;
+            hp = RESTORED_HP;
+        }
+        lastDamageStage = 2;
+    }
 }
 
 int ScreenDoorZombie::getWidth()  const { return SCREENDOOR_ZOMBIE_WALK_FULL_WIDTH; }

@@ -6,7 +6,7 @@
 class FootballZombie : public Zombie {
 public:
     static const int FOOTBALL_HP    = 500;
-    static const int SPEED_BONUS    = 3;
+    static const int SPEED_BONUS    = 10;   // very fast
     static const int DAMAGE1_THRESHOLD = 375; // below: damage1
     static const int DAMAGE2_THRESHOLD = 250; // below: damage2
     static const int NO_HELMET_THRESHOLD = 125; // below: no helmet

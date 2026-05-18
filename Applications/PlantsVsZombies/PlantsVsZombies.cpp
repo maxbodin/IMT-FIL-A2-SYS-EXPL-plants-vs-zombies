@@ -22,6 +22,9 @@
 #include <Applications/PlantsVsZombies/Torchwood.h>
 #include <Applications/PlantsVsZombies/TwinSunflower.h>
 #include <Applications/PlantsVsZombies/WinterMelon.h>
+#include <Applications/PlantsVsZombies/JalapenoZombie.h>
+#include <Applications/PlantsVsZombies/CatapultZombie.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/catapult/catapult_zombie_walk_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/shared_palette.h>
 #include <Applications/PlantsVsZombies/sprites/plants/peashooter/peashooter_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/snow_peashooter/snow_peashooter_sprite.h>
@@ -34,6 +37,7 @@
 #include <Applications/PlantsVsZombies/sprites/plants/blover/blover_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cabbagepult/cabbagepult_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cactus/cactus_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/cactus/cactus_growing_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_sprite.h>
@@ -187,10 +191,26 @@ void PlantsVsZombies::init(Ecran* e, Clavier* c) {
     clear_vga_screen(0);
 }
 
+/* Simple PRNG for gameplay randomness. */
+static unsigned int pvz_rng = 12345;
+static unsigned int pvz_lcg() {
+    pvz_rng = pvz_rng * 1103515245 + 12345;
+    return (pvz_rng >> 16) & 0x7FFF;
+}
+
 static bool aabb(int ax, int ay, int aw, int ah,
                  int bx, int by, int bw, int bh) {
     return ax < bx + bw && ax + aw > bx
         && ay < by + bh && ay + ah > by;
+}
+
+/* Lane-based collision: zombie must overlap plant horizontally and be on the same lane. */
+static bool zombieTouchesPlant(const Zombie* z, const Plant* p) {
+    int zLane = (z->getY() + z->getHeight() - Grid::OFFSET_Y) / Grid::TILE_SIZE;
+    int pLane = (p->getY() - Grid::OFFSET_Y) / Grid::TILE_SIZE;
+    if (zLane != pLane) return false;
+    return z->getX() < p->getX() + p->getWidth()
+        && z->getX() + z->getWidth() > p->getX();
 }
 
 /* [LOGIQUE] Met à jour l'état du jeu : vagues, plantes, zombies, balles, soleils.
@@ -243,6 +263,10 @@ void PlantsVsZombies::updateLogic() {
             if (grid.pixelToTile(plants[i]->getX(), plants[i]->getY(), tc, tr)) {
                 Tile* t = grid.getTile(tc, tr);
                 if (t) t->setState(TileState::Empty);
+                if (plants[i]->getPlantType() == PLANT_COBCANNON) {
+                    Tile* t2 = grid.getTile(tc + 1, tr);
+                    if (t2) t2->setState(TileState::Empty);
+                }
             }
             delete plants[i];
             plants[i] = plants[--plantCount];
@@ -263,12 +287,23 @@ void PlantsVsZombies::updateLogic() {
             int bx = plants[i]->getX();
             int by = plants[i]->getY() - plants[i]->getHeight() / 4;
 
+            /* Cactus: shoot from mouth — top of sprite (changes with extended state). */
+            if (plants[i]->getPlantType() == PLANT_CACTUS) {
+                CactusPlant* cac = (CactusPlant*)plants[i];
+                if (cac->isExtended()) {
+                    by = plants[i]->getY() + CACTUS_HEIGHT - CACTUS_GROWING_HEIGHT;
+                } else {
+                    by = plants[i]->getY();
+                }
+            }
+
             if (plants[i]->getPlantType() == PLANT_THREEPEATER) {
+                Threepeater* tp = (Threepeater*)plants[i];
                 int pc, pr;
                 if (grid.pixelToTile(plants[i]->getX(), plants[i]->getY(), pc, pr)) {
-                    for (int lane = -1; lane <= 1; lane++) {
-                        int row = pr + lane;
-                        if (row < 0 || row >= Grid::ROWS) continue;
+                    int lane = -1 + (2 - tp->getPendingLane());
+                    int row = pr + lane;
+                    if (row >= 0 && row < Grid::ROWS) {
                         int laneY;
                         int dummyX;
                         grid.tileToPixel(pc, row, dummyX, laneY);
@@ -291,6 +326,19 @@ void PlantsVsZombies::updateLogic() {
                     b2->setDirection(-1);
                 }
                 plants[i]->resetCooldown();
+            } else if (plants[i]->getPlantType() == PLANT_COBCANNON) {
+                // Cob cannon: target a random tile in the last 3 columns
+                int targetCol = (Grid::COLS - 3) + (pvz_lcg() % 3); // columns 6, 7 or 8
+                int targetRow = pvz_lcg() % Grid::ROWS;
+                int targetPx, targetPy;
+                grid.tileToPixel(targetCol, targetRow, targetPx, targetPy);
+                int targetX = targetPx + Grid::TILE_SIZE / 2;
+                int targetY = targetPy + Grid::TILE_SIZE / 2;
+                Bullet* b = bulletPool.acquire();
+                if (b) {
+                    b->initTargeted(bx, by, targetX, plants[i]->getBulletType());
+                    plants[i]->resetCooldown();
+                }
             } else {
                 Bullet* b = bulletPool.acquire();
                 if (b) {
@@ -449,34 +497,29 @@ void PlantsVsZombies::updateLogic() {
         }
     }
 
-    // --- Blover: blow away all zombies on the field ---
+    // --- Blover: push zombies on the same lane to the right periodically ---
     for (int p = 0; p < plantCount; p++) {
         if (plants[p]->getPlantType() != PLANT_BLOVER) continue;
         Blover* bl = (Blover*)plants[p];
-        if (!bl->isBlowing()) continue;
+        if (!bl->shouldPush()) continue;
 
+        bl->resetPushCooldown();
+        int bloverLane = bl->getLane();
         for (int i = 0; i < zombieCount; i++) {
-            // Push zombies to the right off-screen
-            int zx = zombies[i]->getX();
-            if (zx < SCREEN_WIDTH) {
-                zombies[i]->takeDamage(Blover::WIND_DAMAGE); // wind damage per tick
-            }
+            int zLane = (zombies[i]->getY() - Grid::OFFSET_Y + Grid::TILE_SIZE / 2) / Grid::TILE_SIZE;
+            if (zLane != bloverLane) continue;
+            zombies[i]->setPosition(zombies[i]->getX() + Blover::PUSH_DISTANCE, zombies[i]->getY());
+            zombies[i]->takeDamage(Blover::PUSH_DAMAGE);
         }
     }
 
     // --- Garlic: redirect zombies to adjacent lanes on contact ---
     for (int p = 0; p < plantCount; p++) {
         if (plants[p]->getPlantType() != PLANT_GARLIC) continue;
-        int gx = plants[p]->getX();
-        int gy = plants[p]->getY();
-        int gw = plants[p]->getWidth();
 
         for (int i = 0; i < zombieCount; i++) {
             if (!zombies[i]->canBeBlocked()) continue;
-            int dx = zombies[i]->getX() - (gx + gw);
-            int dy = zombies[i]->getY() - gy;
-            if (dy < 0) dy = -dy;
-            if (dx >= 0 && dx < COLLISION_DISTANCE && dy < Grid::TILE_SIZE) {
+            if (zombieTouchesPlant(zombies[i], plants[p])) {
                 // Move zombie to adjacent lane (alternate up/down)
                 int zy = zombies[i]->getY();
                 int lane = (zy + zombies[i]->getHeight() - Grid::OFFSET_Y) / Grid::TILE_SIZE;
@@ -490,18 +533,39 @@ void PlantsVsZombies::updateLogic() {
         }
     }
 
+    // --- Pole Vaulting: trigger vault on first plant contact ---
+    for (int i = 0; i < zombieCount; i++) {
+        if (zombies[i]->canBeBlocked()) continue;
+        if (zombies[i]->getState() == DYING || zombies[i]->getState() == DEAD) continue;
+        for (int p = 0; p < plantCount; p++) {
+            if (zombieTouchesPlant(zombies[i], plants[p])) {
+                zombies[i]->onPlantContact();
+                break;
+            }
+        }
+    }
+
     // --- Zombies: block/unblock + damage plant + special interactions + update + remove dead ---
     for (int i = 0; i < zombieCount; i++) {
         bool blocked = false;
         if (zombies[i]->canBeBlocked()) {
         for (int p = 0; p < plantCount; p++) {
-            int dx = zombies[i]->getX() - (plants[p]->getX() + plants[p]->getWidth());
-            int dy = zombies[i]->getY() - plants[p]->getY();
-            if (dy < 0) dy = -dy;
-            if (dx >= 0 && dx < COLLISION_DISTANCE && dy < Grid::TILE_SIZE) {
+            if (zombieTouchesPlant(zombies[i], plants[p])) {
                 blocked = true;
 
+                /* Plant can have a % chance to not block (e.g. SplitPea 50%) */
+                if (plants[p]->blockChance() < 100 &&
+                    (int)(pvz_lcg() % 100) >= plants[p]->blockChance()) {
+                    blocked = false;
+                }
+
                 PlantType pt = plants[p]->getPlantType();
+
+                /* Notify zombie of plant contact (JackInTheBox uses this) */
+                zombies[i]->onPlantContact();
+                if (zombies[i]->hasPendingExplosion()) {
+                    blocked = false;
+                }
 
                 /* Jalapeno: ignite on contact, apply fire to zombie */
                 if (pt == PLANT_JALAPENO) {
@@ -536,7 +600,11 @@ void PlantsVsZombies::updateLogic() {
 
                 /* Normal plants (peashooter, sunflower, wallnut): zombie blocks and attacks */
                 if (blocked && zombies[i]->canHit()) {
-                    plants[p]->takeDamage(ZOMBIE_DAMAGE);
+                    plants[p]->takeDamage(ZOMBIE_DAMAGE * zombies[i]->getAttackDamage());
+                    if (zombies[i]->appliesFireToPlant() && !plants[p]->isOnFireEffect()) {
+                        plants[p]->applyFire(JalapenoZombie::FIRE_DMG_PER_TICK,
+                                             JalapenoZombie::FIRE_DURATION);
+                    }
                     zombies[i]->resetCooldown();
                 }
                 break;
@@ -555,6 +623,26 @@ void PlantsVsZombies::updateLogic() {
             continue;
         }
         if (zombies[i]->isDead()) {
+            // --- Death spawn: zombie spawns new zombies on death ---
+            int dsc = zombies[i]->deathSpawnCount();
+            if (dsc > 0) {
+                int zx = zombies[i]->getX();
+                int zy = zombies[i]->getY() + zombies[i]->getHeight();
+                int lane = (zy - Grid::OFFSET_Y) / Grid::TILE_SIZE;
+                pvz_rng ^= (unsigned int)compt;
+                for (int s = 0; s < dsc && zombieCount < MAX_ZOMBIES; s++) {
+                    int ny = Grid::OFFSET_Y + lane * Grid::TILE_SIZE
+                           + Grid::TILE_SIZE / 2 - BASIC_ZOMBIE_WALK_FULL_HEIGHT;
+                    int roll = pvz_lcg() % 3;
+                    Zombie* z;
+                    switch (roll) {
+                        case 0:  z = new ConeZombie(zx, ny); break;
+                        case 1:  z = new BaseballZombie(zx, ny); break;
+                        default: z = new Zombie(zx, ny); break;
+                    }
+                    zombies[zombieCount++] = z;
+                }
+            }
             delete zombies[i];
             zombies[i] = zombies[--zombieCount];
             zombies[zombieCount] = 0;
@@ -581,6 +669,63 @@ void PlantsVsZombies::updateLogic() {
         }
     }
 
+    // --- JackInTheBox explosion: kill self, spawn random zombies ---
+    for (int i = 0; i < zombieCount; i++) {
+        if (!zombies[i]->hasPendingExplosion()) continue;
+        zombies[i]->consumeExplosion();
+        int zx = zombies[i]->getX();
+        int zy = zombies[i]->getY() + zombies[i]->getHeight();
+        int lane = (zy - Grid::OFFSET_Y) / Grid::TILE_SIZE;
+        int spawnCount = zombies[i]->explosionSpawnCount();
+        // Kill the JackInTheBox zombie
+        zombies[i]->takeDamage(9999);
+        // Spawn random zombies in nearby lanes
+        pvz_rng ^= (unsigned int)compt;
+        int laneOffsets[] = { 0, -1, 1, -2, 2 };
+        for (int s = 0; s < spawnCount && zombieCount < MAX_ZOMBIES; s++) {
+            int targetLane = lane + laneOffsets[s % 5];
+            if (targetLane < 0 || targetLane >= Grid::ROWS)
+                targetLane = lane;
+            int ny = Grid::OFFSET_Y + targetLane * Grid::TILE_SIZE
+                     + Grid::TILE_SIZE / 2 - BASIC_ZOMBIE_WALK_FULL_HEIGHT;
+            int roll = pvz_lcg() % 4;
+            Zombie* z;
+            switch (roll) {
+                case 0:  z = new ConeZombie(zx, ny); break;
+                case 1:  z = new Zombie(zx, ny); break;
+                case 2:  z = new BaseballZombie(zx, ny); break;
+                default: z = new Zombie(zx, ny); break;
+            }
+            zombies[zombieCount++] = z;
+        }
+    }
+
+    // --- Catapult zombie: throw ball at plants ahead ---
+    for (int i = 0; i < zombieCount; i++) {
+        if (zombies[i]->getState() == DYING || zombies[i]->getState() == DEAD) continue;
+        CatapultZombie* cz = 0;
+        // Check if this zombie is a catapult (can throw)
+        if (zombies[i]->canBeBlocked() && !zombies[i]->isBlocked()) {
+            // Use canThrow virtual — only CatapultZombie will actually have throw logic
+            // We detect catapults by checking if they have width == CATAPULT_ZOMBIE_WALK_WIDTH
+            if (zombies[i]->getWidth() == CATAPULT_ZOMBIE_WALK_WIDTH) {
+                cz = (CatapultZombie*)zombies[i];
+            }
+        }
+        if (!cz) continue;
+        if (cz->hasBallReady()) {
+            Bullet* b = bulletPool.acquire();
+            if (b) {
+                b->initTargeted(cz->getX(), cz->getBallTargetY(),
+                                cz->getBallTargetX(), BULLET_BALL);
+                b->setDirection(-1);
+            }
+            cz->consumeBall();
+        } else if (cz->canThrow()) {
+            cz->startThrow();
+        }
+    }
+
     // --- Bullets: update + collision vs zombies (object pool, no new/delete) ---
     for (int i = 0; i < bulletPool.CAPACITY; i++) {
         Bullet* b = bulletPool.get(i);
@@ -592,24 +737,83 @@ void PlantsVsZombies::updateLogic() {
             continue;
         }
 
+        // AoE bullet just reached its target (transitioned to impacting in update)
+        if (b->isImpacting() && b->isAoE() && b->consumeAoE()) {
+            int bx = b->getX();
+            int by = b->getY();
+            int radius = b->getAoeRadius();
+            int dmg = b->getDamage();
+            for (int z = 0; z < zombieCount; z++) {
+                if (zombies[z]->isInvulnerable()) continue;
+                int zx = zombies[z]->getX() + zombies[z]->getWidth() / 2;
+                int zy = zombies[z]->getY() + zombies[z]->getHeight() / 2;
+                int dx = bx - zx;
+                int dy = by - zy;
+                if (dx * dx + dy * dy <= radius * radius) {
+                    b->onHit(*zombies[z]);
+                    DmgIndicator* di = dmgPool.acquire();
+                    if (di) di->init(zombies[z]->getX(),
+                                     zombies[z]->getY() - DMG_INDICATOR_Y_OFFSET,
+                                     dmg, DMG_INDICATOR_DURATION);
+                }
+            }
+            continue;
+        }
+
+        // Ball bullet (from catapult zombie): damages plants on impact
+        if (b->isImpacting() && b->getType() == BULLET_BALL) {
+            int bx = b->getX();
+            int by = b->getY();
+            for (int p = 0; p < plantCount; p++) {
+                if (aabb(bx, by, b->getWidth(), b->getHeight(),
+                         plants[p]->getX(), plants[p]->getY(),
+                         plants[p]->getWidth(), plants[p]->getHeight())) {
+                    plants[p]->takeDamage(b->getDamage());
+                    break;
+                }
+            }
+            continue;
+        }
+
         if (b->isImpacting()) continue;
 
         int travelDist = b->getX() - b->getSpawnX();
         if (travelDist < 0) travelDist = -travelDist;
         if (travelDist > COLLISION_DISTANCE) {
             for (int z = 0; z < zombieCount; z++) {
+                if (zombies[z]->isInvulnerable()) continue;
                 if (aabb(b->getX(),  b->getY(),
                          b->getWidth(), b->getHeight(),
                          zombies[z]->getX(),  zombies[z]->getY(),
                          zombies[z]->getWidth(), zombies[z]->getHeight())) {
                     int dmg = b->getDamage();
-                    b->onHit(*zombies[z]);
                     b->startImpact();
-                    /* Damage indicator via pool */
-                    DmgIndicator* di = dmgPool.acquire();
-                    if (di) di->init(zombies[z]->getX(),
-                                     zombies[z]->getY() - DMG_INDICATOR_Y_OFFSET,
-                                     dmg, DMG_INDICATOR_DURATION);
+                    if (b->isAoE() && b->consumeAoE()) {
+                        // AoE: damage all zombies in radius
+                        int bx = b->getX();
+                        int by = b->getY();
+                        int radius = b->getAoeRadius();
+                        for (int az = 0; az < zombieCount; az++) {
+                            if (zombies[az]->isInvulnerable()) continue;
+                            int zx = zombies[az]->getX() + zombies[az]->getWidth() / 2;
+                            int zy = zombies[az]->getY() + zombies[az]->getHeight() / 2;
+                            int dx = bx - zx;
+                            int dy = by - zy;
+                            if (dx * dx + dy * dy <= radius * radius) {
+                                b->onHit(*zombies[az]);
+                                DmgIndicator* di = dmgPool.acquire();
+                                if (di) di->init(zombies[az]->getX(),
+                                                 zombies[az]->getY() - DMG_INDICATOR_Y_OFFSET,
+                                                 dmg, DMG_INDICATOR_DURATION);
+                            }
+                        }
+                    } else {
+                        b->onHit(*zombies[z]);
+                        DmgIndicator* di = dmgPool.acquire();
+                        if (di) di->init(zombies[z]->getX(),
+                                         zombies[z]->getY() - DMG_INDICATOR_Y_OFFSET,
+                                         dmg, DMG_INDICATOR_DURATION);
+                    }
                     break;
                 }
             }
@@ -697,10 +901,22 @@ void PlantsVsZombies::renderFrame() {
     for (int i = 0; i < sunOnGroundCount; i++)
         if (suns_on_ground[i]) suns_on_ground[i]->render();
 
-    unsigned char c1 = grid.isTileOccupied(cursorCol, cursorRow)   ? SUN_HUD_RED : CURSOR_P1_COLOR;
-    unsigned char c2 = grid.isTileOccupied(cursorCol2, cursorRow2) ? SUN_HUD_RED : CURSOR_P2_COLOR;
-    drawCursor(cursorCol,  cursorRow,  c1);
-    drawCursor(cursorCol2, cursorRow2, c2);
+    // Determine tile count for each player's cursor (2 for cob cannon)
+    int p1Tiles = 1, p2Tiles = 1;
+    {
+        int idx1 = queue1.getRosterCursor();
+        if (idx1 < queue1.getCount() && queue1.getSlot(idx1) == PLANT_COBCANNON) p1Tiles = 2;
+        int idx2 = queue2.getRosterCursor();
+        if (idx2 < queue2.getCount() && queue2.getSlot(idx2) == PLANT_COBCANNON) p2Tiles = 2;
+    }
+    unsigned char c1 = (grid.isTileOccupied(cursorCol, cursorRow)
+                     || (p1Tiles == 2 && (cursorCol + 1 >= Grid::COLS || grid.isTileOccupied(cursorCol + 1, cursorRow))))
+                     ? SUN_HUD_RED : CURSOR_P1_COLOR;
+    unsigned char c2 = (grid.isTileOccupied(cursorCol2, cursorRow2)
+                     || (p2Tiles == 2 && (cursorCol2 + 1 >= Grid::COLS || grid.isTileOccupied(cursorCol2 + 1, cursorRow2))))
+                     ? SUN_HUD_RED : CURSOR_P2_COLOR;
+    drawCursor(cursorCol,  cursorRow,  c1, p1Tiles);
+    drawCursor(cursorCol2, cursorRow2, c2, p2Tiles);
 
     // Timer (scale 1) with "s" unit
     {
@@ -962,7 +1178,36 @@ bool PlantsVsZombies::placePlant(int col, int row, PlantType type) {
     int cost = PlantQueue::costOf(type);
     if (!canAfford(cost)) return false;
 
-    if (grid.isTileOccupied(col, row)) return false;
+    if (grid.isTileOccupied(col, row)) {
+        // Twin sunflower can replace an existing sunflower
+        if (type == PLANT_TWINSUNFLOWER) {
+            int existing = -1;
+            int px2, py2;
+            grid.tileToPixel(col, row, px2, py2);
+            for (int i = 0; i < plantCount; i++) {
+                if (plants[i]->getPlantType() == PLANT_SUNFLOWER &&
+                    plants[i]->getX() == px2 && plants[i]->getY() == py2) {
+                    existing = i;
+                    break;
+                }
+            }
+            if (existing < 0) return false;
+            // Remove the sunflower
+            delete plants[existing];
+            plants[existing] = plants[--plantCount];
+            plants[plantCount] = 0;
+            Tile* t = grid.getTile(col, row);
+            if (t) t->setState(TileState::Empty);
+        } else {
+            return false;
+        }
+    }
+
+    // Cob cannon requires 2 adjacent horizontal tiles
+    if (type == PLANT_COBCANNON) {
+        if (col + 1 >= Grid::COLS) return false;
+        if (grid.isTileOccupied(col + 1, row)) return false;
+    }
 
     int px, py;
     grid.tileToPixel(col, row, px, py);
@@ -1050,6 +1295,10 @@ bool PlantsVsZombies::placePlant(int col, int row, PlantType type) {
         plants[plantCount++] = p;
         Tile* t = grid.getTile(col, row);
         if (t) t->setState(TileState::HasPlant);
+        if (type == PLANT_COBCANNON) {
+            Tile* t2 = grid.getTile(col + 1, row);
+            if (t2) t2->setState(TileState::HasPlant);
+        }
         return true;
     }
     return false;
@@ -1059,10 +1308,11 @@ bool PlantsVsZombies::placePlant(int col, int row, PlantType type) {
 // Cursor
 // ---------------------------------------------------------------------------
 
-void PlantsVsZombies::drawCursor(int col, int row, unsigned char color) {
+void PlantsVsZombies::drawCursor(int col, int row, unsigned char color, int tileCount) {
     int px, py;
     grid.tileToPixel(col, row, px, py);
-    int w = Grid::TILE_SIZE, h = Grid::TILE_SIZE;
+    int w = Grid::TILE_SIZE * tileCount, h = Grid::TILE_SIZE;
+    if (px + w > SCREEN_WIDTH) w = SCREEN_WIDTH - px;
     for (int x = px; x < px + w; x++) {
         video[py * SCREEN_WIDTH + x]           = color;
         video[(py + h - 1) * SCREEN_WIDTH + x] = color;

@@ -13,6 +13,7 @@ public:
 
     BulletType getBulletType() const override;
     PlantType getPlantType() const override;
+    int blockChance() const override;
 
     bool shootsBackward() const { return true; }
 

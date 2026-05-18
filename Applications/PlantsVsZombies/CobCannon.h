@@ -8,11 +8,11 @@ public:
     static const int COST = 500;
     static const int HP   = 400;
 
-    static const int ANIM_SPEED_LOADING = 8;
-    static const int ANIM_SPEED_READY   = 10;
-    static const int ANIM_SPEED_RISING  = 5;
-    static const int ANIM_SPEED_FIRING  = 4;
-    static const int ANIM_SPEED_USED    = 6;
+    static const int ANIM_SPEED_LOADING = 30;
+    static const int ANIM_SPEED_READY   = 12;
+    static const int ANIM_SPEED_RISING  = 8;
+    static const int ANIM_SPEED_FIRING  = 6;
+    static const int ANIM_SPEED_USED    = 10;
 
     enum CannonState { LOADING, READY, RISING, FIRING, USED };
 

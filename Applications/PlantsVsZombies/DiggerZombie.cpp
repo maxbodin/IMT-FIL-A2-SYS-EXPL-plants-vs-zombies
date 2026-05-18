@@ -41,6 +41,10 @@ bool DiggerZombie::canBeBlocked() const {
     return !digging;
 }
 
+bool DiggerZombie::isInvulnerable() const {
+    return digging;
+}
+
 bool DiggerZombie::isDigging() const { return digging; }
 
 int DiggerZombie::getWidth()  const {

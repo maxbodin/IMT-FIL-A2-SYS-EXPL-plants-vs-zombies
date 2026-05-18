@@ -11,6 +11,7 @@ public:
 
     CabbagePult(int x, int y);
 
+    void render() override;
     BulletType getBulletType() const override;
     PlantType getPlantType() const override;
 

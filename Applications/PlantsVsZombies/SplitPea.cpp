@@ -7,6 +7,7 @@ SplitPea::SplitPea(int x, int y)
 
 BulletType SplitPea::getBulletType() const { return BULLET_PEASHOOTER; }
 PlantType SplitPea::getPlantType() const { return PLANT_SPLITPEA; }
+int SplitPea::blockChance() const { return 50; }
 
 const unsigned char* SplitPea::idleFrame(int f) const { return splitpea_frames[f]; }
 int SplitPea::idleFrameCount() const { return SPLITPEA_FRAMES; }

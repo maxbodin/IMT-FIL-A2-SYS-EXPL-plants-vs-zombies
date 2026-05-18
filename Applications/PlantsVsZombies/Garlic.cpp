@@ -1,4 +1,5 @@
 #include <Applications/PlantsVsZombies/Garlic.h>
+#include <Applications/PlantsVsZombies/Grid.h>
 #include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_damaged_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/garlic/garlic_very_damaged_sprite.h>
@@ -20,7 +21,9 @@ void Garlic::render() {
         spriteData = garlic_very_damaged_frames[frame % GARLIC_VERY_DAMAGED_FRAMES];
     }
 
-    draw_sprite(spriteData, GARLIC_WIDTH, GARLIC_HEIGHT, x, y);
+    int rx = x + (Grid::TILE_SIZE - GARLIC_WIDTH) / 2;
+    int ry = y + Grid::TILE_SIZE - GARLIC_HEIGHT;
+    draw_sprite(spriteData, GARLIC_WIDTH, GARLIC_HEIGHT, rx, ry);
     renderHpBar(GARLIC_WIDTH / 2, GARLIC_HEIGHT);
 }
 

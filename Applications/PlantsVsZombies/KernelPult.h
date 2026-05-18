@@ -11,6 +11,7 @@ public:
 
     KernelPult(int x, int y);
 
+    int getWidth() const override;
     BulletType getBulletType() const override;
     PlantType getPlantType() const override;
 

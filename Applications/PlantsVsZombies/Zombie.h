@@ -30,7 +30,7 @@ public:
     void unblock();
     bool isBlocked() const;
 
-    void applySlow(int duration);
+    void applySlow(int duration, bool ice = true);
     bool isSlowed() const;
 
     void applyFire(int damage, int duration);
@@ -40,6 +40,15 @@ public:
     virtual void consumeSummon();
     virtual bool canBeBlocked() const;
     virtual bool isFlying() const;
+    virtual bool isInvulnerable() const;
+    virtual int getAttackDamage() const;
+    virtual bool appliesFireToPlant() const;
+
+    virtual void onPlantContact();
+    virtual bool hasPendingExplosion() const;
+    virtual void consumeExplosion();
+    virtual int explosionSpawnCount() const;
+    virtual int deathSpawnCount() const;
 
 protected:
     int animSpeed;
@@ -47,6 +56,7 @@ protected:
     int frame;
     int animTick;
     int slowTicks;
+    bool iceSlow;
 
     /* Fire effect */
     int fireDamage;

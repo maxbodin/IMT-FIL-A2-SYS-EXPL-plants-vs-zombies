@@ -8,14 +8,20 @@ JackInTheBoxZombie::JackInTheBoxZombie(int x, int y, int speedBonus)
       explodeTriggered(false), explodePending(false) {}
 
 void JackInTheBoxZombie::onUpdate() {
-    if (!explodeTriggered && x <= EXPLODE_X) {
+    // Explosion is triggered by plant contact via onPlantContact()
+}
+
+void JackInTheBoxZombie::onPlantContact() {
+    if (!explodeTriggered) {
         explodeTriggered = true;
-        explodePending   = true;
+        explodePending = true;
     }
 }
 
 bool JackInTheBoxZombie::hasPendingExplosion() const { return explodePending; }
 void JackInTheBoxZombie::consumeExplosion() { explodePending = false; }
+int JackInTheBoxZombie::explosionSpawnCount() const { return SPAWN_COUNT; }
+int JackInTheBoxZombie::deathSpawnCount() const { return 1; }
 
 int JackInTheBoxZombie::getWidth()  const { return JACKINTHEBOX_ZOMBIE_WALK_WIDTH; }
 int JackInTheBoxZombie::getHeight() const { return JACKINTHEBOX_ZOMBIE_WALK_HEIGHT; }

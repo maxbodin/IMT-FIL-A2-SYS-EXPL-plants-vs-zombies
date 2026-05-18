@@ -8,6 +8,7 @@ public:
     static const int SCREENDOOR_HP       = 400;
     static const int DAMAGED_THRESHOLD   = 260;
     static const int NO_DOOR_THRESHOLD   = 130;
+    static const int RESTORED_HP         = 300;  // HP after screen breaks
 
     ScreenDoorZombie(int x, int y, int speedBonus = 0);
 
@@ -34,6 +35,7 @@ protected:
 
 private:
     int lastDamageStage;
+    bool doorBroken;
     int getDamageStage() const;
 };
 

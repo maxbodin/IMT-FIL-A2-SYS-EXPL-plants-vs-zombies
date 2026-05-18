@@ -9,6 +9,9 @@ public:
     static const int SPEED_BONUS    = 2;
     static const int CRUSH_DAMAGE   = 300;
     static const int CRUSH_COOLDOWN = 200;
+    static const int THROW_COOLDOWN = 250;
+    static const int THROW_ANIM_SPEED = 5;
+    static const int BALL_DAMAGE    = 60;
 
     CatapultZombie(int x, int y, int speedBonus = 0);
 
@@ -18,8 +21,22 @@ public:
     bool canCrush() const;
     void resetCrushCooldown();
 
+    bool canThrow() const;
+    void startThrow();
+    bool isThrowing() const { return throwing; }
+    bool hasBallReady() const;
+    void consumeBall();
+    int getBallTargetX() const { return ballTargetX; }
+    int getBallTargetY() const;
+
 protected:
     int crushCooldown;
+    int throwCooldown;
+    bool throwing;
+    int throwFrame;
+    int throwAnimTick;
+    bool ballReady;
+    int ballTargetX;
 
     const unsigned char* currentWalkFrame(int f) const override;
     const unsigned char* currentFightFrame(int f) const override;

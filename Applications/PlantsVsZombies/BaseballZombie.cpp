@@ -47,17 +47,31 @@ const unsigned char* BaseballZombie::currentFightFrame(int f) const {
 }
 
 int BaseballZombie::currentWalkFrameCount() const { return BASEBALL_ZOMBIE_WALK_FULL_FRAMES; }
-int BaseballZombie::currentFightFrameCount() const { return BASEBALL_ZOMBIE_FIGHT_FULL_FRAMES; }
+int BaseballZombie::currentFightFrameCount() const {
+    if (getDamageStage() >= 2) return BASEBALL_ZOMBIE_FIGHT_NO_HEAD_NO_ARM_FRAMES;
+    if (getDamageStage() == 1) return BASEBALL_ZOMBIE_FIGHT_NO_ARM_FRAMES;
+    return BASEBALL_ZOMBIE_FIGHT_FULL_FRAMES;
+}
 int BaseballZombie::currentWalkWidth() const {
     if (getDamageStage() == 3) return BASEBALL_ZOMBIE_WALK_NO_HEAD_NO_ARM_WIDTH;
+    if (getDamageStage() == 1 || getDamageStage() == 2) return BASEBALL_ZOMBIE_WALK_NO_ARM_WIDTH;
     return BASEBALL_ZOMBIE_WALK_FULL_WIDTH;
 }
 int BaseballZombie::currentWalkHeight() const {
     if (getDamageStage() == 3) return BASEBALL_ZOMBIE_WALK_NO_HEAD_NO_ARM_HEIGHT;
+    if (getDamageStage() == 1 || getDamageStage() == 2) return BASEBALL_ZOMBIE_WALK_NO_ARM_HEIGHT;
     return BASEBALL_ZOMBIE_WALK_FULL_HEIGHT;
 }
-int BaseballZombie::currentFightWidth() const { return BASEBALL_ZOMBIE_FIGHT_FULL_WIDTH; }
-int BaseballZombie::currentFightHeight() const { return BASEBALL_ZOMBIE_FIGHT_FULL_HEIGHT; }
+int BaseballZombie::currentFightWidth() const {
+    if (getDamageStage() >= 2) return BASEBALL_ZOMBIE_FIGHT_NO_HEAD_NO_ARM_WIDTH;
+    if (getDamageStage() == 1) return BASEBALL_ZOMBIE_FIGHT_NO_ARM_WIDTH;
+    return BASEBALL_ZOMBIE_FIGHT_FULL_WIDTH;
+}
+int BaseballZombie::currentFightHeight() const {
+    if (getDamageStage() >= 2) return BASEBALL_ZOMBIE_FIGHT_NO_HEAD_NO_ARM_HEIGHT;
+    if (getDamageStage() == 1) return BASEBALL_ZOMBIE_FIGHT_NO_ARM_HEIGHT;
+    return BASEBALL_ZOMBIE_FIGHT_FULL_HEIGHT;
+}
 
 const unsigned char* BaseballZombie::currentDeathFrame(int f) const {
     if (getDamageStage() >= 1) return baseball_zombie_death_frames[f % BASEBALL_ZOMBIE_DEATH_FRAMES];

@@ -1,4 +1,5 @@
 #include <Applications/PlantsVsZombies/CherryBomb.h>
+#include <Applications/PlantsVsZombies/Grid.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_attacking_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cherrybomb/cherrybomb_explosion_sprite.h>
@@ -48,18 +49,23 @@ void CherryBomb::update() {
 
 void CherryBomb::render() {
     if (state == DEAD) return;
+    // All phases centered on tile center
+    int cx = x + Grid::TILE_SIZE / 2;
+    int by = y + Grid::TILE_SIZE;
     if (exploding) {
-        int ex = x - (CHERRYBOMB_EXPLOSION_WIDTH - CHERRYBOMB_WIDTH) / 2;
-        int ey = y - (CHERRYBOMB_EXPLOSION_HEIGHT - CHERRYBOMB_HEIGHT) / 2;
+        int ex = cx - CHERRYBOMB_EXPLOSION_WIDTH / 2;
+        int ey = by - CHERRYBOMB_EXPLOSION_HEIGHT;
         draw_sprite(cherrybomb_explosion_frames[explosionFrame],
                     CHERRYBOMB_EXPLOSION_WIDTH, CHERRYBOMB_EXPLOSION_HEIGHT, ex, ey);
     } else if (attacking) {
-        int ax = x + (CHERRYBOMB_WIDTH - CHERRYBOMB_ATTACKING_WIDTH) / 2;
-        int ay = y + CHERRYBOMB_HEIGHT - CHERRYBOMB_ATTACKING_HEIGHT;
+        int ax = cx - CHERRYBOMB_ATTACKING_WIDTH / 2;
+        int ay = by - CHERRYBOMB_ATTACKING_HEIGHT;
         draw_sprite(cherrybomb_attacking_frames[attackingFrame],
                     CHERRYBOMB_ATTACKING_WIDTH, CHERRYBOMB_ATTACKING_HEIGHT, ax, ay);
     } else {
-        draw_sprite(cherrybomb_frames[frame], CHERRYBOMB_WIDTH, CHERRYBOMB_HEIGHT, x, y);
+        int ix = cx - CHERRYBOMB_WIDTH / 2;
+        int iy = by - CHERRYBOMB_HEIGHT;
+        draw_sprite(cherrybomb_frames[frame], CHERRYBOMB_WIDTH, CHERRYBOMB_HEIGHT, ix, iy);
         renderHpBar(CHERRYBOMB_WIDTH / 2, CHERRYBOMB_HEIGHT);
     }
 }

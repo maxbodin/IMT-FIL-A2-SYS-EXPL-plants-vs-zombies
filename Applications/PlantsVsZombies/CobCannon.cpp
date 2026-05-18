@@ -1,4 +1,5 @@
 #include <Applications/PlantsVsZombies/CobCannon.h>
+#include <Applications/PlantsVsZombies/Grid.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_loading_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/cobcannon/cobcannon_ready_sprite.h>
@@ -100,11 +101,13 @@ void CobCannon::render() {
         break;
     }
 
-    // Bottom-align all sprites to the base position
-    int drawY = y + COBCANNON_HEIGHT - h;
-    int drawX = x + (COBCANNON_WIDTH - w) / 2;
+    // Center across 2 tiles, bottom-aligned
+    int cx = x + Grid::TILE_SIZE;  // center of 2-tile span
+    int by = y + Grid::TILE_SIZE;
+    int drawX = cx - w / 2;
+    int drawY = by - h;
     draw_sprite(sprite, w, h, drawX, drawY);
-    renderHpBar(COBCANNON_WIDTH / 2, COBCANNON_HEIGHT);
+    renderHpBar(Grid::TILE_SIZE, Grid::TILE_SIZE);
 }
 
 PlantType CobCannon::getPlantType() const { return PLANT_COBCANNON; }

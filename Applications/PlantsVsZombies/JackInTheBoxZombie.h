@@ -5,17 +5,20 @@
 
 class JackInTheBoxZombie : public Zombie {
 public:
-    static const int JACK_HP     = 200;
+    static const int JACK_HP     = 400;
     static const int SPEED_BONUS = 2;
-    static const int EXPLODE_X   = 80; // explodes when reaching this x
+    static const int SPAWN_COUNT = 4; // zombies spawned on explosion
 
     JackInTheBoxZombie(int x, int y, int speedBonus = 0);
 
     int getWidth()  const override;
     int getHeight() const override;
 
-    bool hasPendingExplosion() const;
-    void consumeExplosion();
+    void onPlantContact() override;
+    bool hasPendingExplosion() const override;
+    void consumeExplosion() override;
+    int explosionSpawnCount() const override;
+    int deathSpawnCount() const override;
 
 protected:
     const unsigned char* currentWalkFrame(int f) const override;

@@ -33,7 +33,7 @@ void ConeZombie::onUpdate() {
             int dir = (roll / LANE_SWITCH_CHANCE) % 2 == 0 ? -1 : 1;
             int newY = y + dir * Grid::TILE_SIZE;
             int minY = Grid::OFFSET_Y;
-            int maxY = Grid::OFFSET_Y + (Grid::ROWS - 1) * Grid::TILE_SIZE;
+            int maxY = Grid::OFFSET_Y + (Grid::ROWS - 2) * Grid::TILE_SIZE;
             if (newY >= minY && newY <= maxY) {
                 y = newY;
             }
@@ -60,12 +60,30 @@ const unsigned char* ConeZombie::currentFightFrame(int f) const {
     }
 }
 
-int ConeZombie::currentWalkFrameCount() const { return CONE_ZOMBIE_WALK_CONE_FULL_FRAMES; }
-int ConeZombie::currentFightFrameCount() const { return CONE_ZOMBIE_FIGHT_CONE_FULL_FRAMES; }
-int ConeZombie::currentWalkWidth() const { return CONE_ZOMBIE_WALK_CONE_FULL_WIDTH; }
-int ConeZombie::currentWalkHeight() const { return CONE_ZOMBIE_WALK_CONE_FULL_HEIGHT; }
-int ConeZombie::currentFightWidth() const { return CONE_ZOMBIE_FIGHT_CONE_FULL_WIDTH; }
-int ConeZombie::currentFightHeight() const { return CONE_ZOMBIE_FIGHT_CONE_FULL_HEIGHT; }
+int ConeZombie::currentWalkFrameCount() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_WALK_FULL_FRAMES;
+    return CONE_ZOMBIE_WALK_CONE_FULL_FRAMES;
+}
+int ConeZombie::currentFightFrameCount() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_FIGHT_FULL_FRAMES;
+    return CONE_ZOMBIE_FIGHT_CONE_FULL_FRAMES;
+}
+int ConeZombie::currentWalkWidth() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_WALK_FULL_WIDTH;
+    return CONE_ZOMBIE_WALK_CONE_FULL_WIDTH;
+}
+int ConeZombie::currentWalkHeight() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_WALK_FULL_HEIGHT;
+    return CONE_ZOMBIE_WALK_CONE_FULL_HEIGHT;
+}
+int ConeZombie::currentFightWidth() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_FIGHT_FULL_WIDTH;
+    return CONE_ZOMBIE_FIGHT_CONE_FULL_WIDTH;
+}
+int ConeZombie::currentFightHeight() const {
+    if (getDamageStage() == 2) return BASIC_ZOMBIE_FIGHT_FULL_HEIGHT;
+    return CONE_ZOMBIE_FIGHT_CONE_FULL_HEIGHT;
+}
 
 const unsigned char* ConeZombie::currentDeathFrame(int f) const {
     switch (getDamageStage()) {

@@ -1,11 +1,14 @@
 #include <Applications/PlantsVsZombies/KernelPult.h>
 #include <Applications/PlantsVsZombies/sprites/plants/kernelpult/kernelpult_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/plants/kernelpult/kernelpult_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/Grid.h>
 
 extern volatile int compt;
 
 KernelPult::KernelPult(int x, int y)
     : ShooterPlant(x, y, HP, SHOOT_DELAY) {}
+
+int KernelPult::getWidth() const { return Grid::TILE_SIZE; }
 
 BulletType KernelPult::getBulletType() const {
     // 25% chance to shoot butter instead of kernel

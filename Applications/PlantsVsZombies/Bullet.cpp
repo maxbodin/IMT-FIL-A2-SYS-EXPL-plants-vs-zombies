@@ -15,6 +15,7 @@
 #include <Applications/PlantsVsZombies/sprites/objects/wintermelon/wintermelon_projectile_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/objects/wintermelon/wintermelon_impact_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/objects/fire_pea/fire_pea_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/catapult/catapult_zombie_ball_sprite.h>
 #include <vga/vga.h>
 
 /* Damage values per bullet type. */
@@ -28,13 +29,15 @@ static const int DAMAGE_BUTTER     = 40;
 static const int DAMAGE_COB        = 300;
 static const int DAMAGE_MELON      = 80;
 static const int DAMAGE_WINTER_MELON = 80;
+static const int DAMAGE_BALL       = 60;
 static const int PROJECTILE_ANIM_SPEED = 5;
 
 Bullet::Bullet() : x(0), y(0), spawnX(0), active(false),
                    type(BULLET_PEASHOOTER), damage(0),
                    impacting(false), impactFrame(0), impactAnimTick(0), impactHoldTicks(0),
                    projectileFrame(0), projectileAnimTick(0),
-                   direction(1), torchUpgraded(false) {}
+                   direction(1), torchUpgraded(false),
+                   targetX(0), targeted(false), aoeApplied(false) {}
 
 void Bullet::init(int x, int y, BulletType type) {
     this->x      = x;
@@ -52,6 +55,7 @@ void Bullet::init(int x, int y, BulletType type) {
         case BULLET_COB:      this->damage = DAMAGE_COB;       break;
         case BULLET_MELON:    this->damage = DAMAGE_MELON;      break;
         case BULLET_WINTER_MELON: this->damage = DAMAGE_WINTER_MELON; break;
+        case BULLET_BALL:     this->damage = DAMAGE_BALL;     break;
         default:              this->damage = DAMAGE_PEASHOOTER; break;
     }
     this->impacting = false;
@@ -62,6 +66,15 @@ void Bullet::init(int x, int y, BulletType type) {
     this->projectileAnimTick = 0;
     this->direction = 1;
     this->torchUpgraded = false;
+    this->targetX = 0;
+    this->targeted = false;
+    this->aoeApplied = false;
+}
+
+void Bullet::initTargeted(int x, int y, int targetX, BulletType type) {
+    init(x, y, type);
+    this->targetX = targetX;
+    this->targeted = true;
 }
 
 void Bullet::update() {
@@ -84,6 +97,15 @@ void Bullet::update() {
     if (type == BULLET_FIRE_PEA && ++projectileAnimTick >= PROJECTILE_ANIM_SPEED) {
         projectileAnimTick = 0;
         projectileFrame = (projectileFrame + 1) % FIRE_PEA_FRAMES;
+    }
+    // Targeted bullets auto-impact when reaching their target
+    if (targeted) {
+        bool reached = (direction >= 0) ? (x >= targetX) : (x <= targetX);
+        if (reached) {
+            x = targetX;
+            startImpact();
+            return;
+        }
     }
     if (x >= 320 || x < 0)
         active = false;
@@ -153,12 +175,16 @@ void Bullet::render() {
                     CABBAGE_WIDTH, CABBAGE_HEIGHT,
                     x, y);
     } else if (type == BULLET_MELON) {
-        draw_sprite(melon_frames[0],
+        draw_sprite(melon_sprite_data,
                     MELON_WIDTH, MELON_HEIGHT,
                     x, y);
     } else if (type == BULLET_WINTER_MELON) {
-        draw_sprite(wintermelon_projectile_frames[0],
+        draw_sprite(wintermelon_projectile_sprite_data,
                     WINTERMELON_PROJECTILE_WIDTH, WINTERMELON_PROJECTILE_HEIGHT,
+                    x, y);
+    } else if (type == BULLET_BALL) {
+        draw_sprite(catapult_zombie_ball_frames[0],
+                    CATAPULT_ZOMBIE_BALL_WIDTH, CATAPULT_ZOMBIE_BALL_HEIGHT,
                     x, y);
     } else {
         draw_sprite(peabullet_sprite_data,
@@ -174,7 +200,7 @@ void Bullet::onHit(Zombie& target) {
     if (type == BULLET_WINTER_MELON)
         target.applySlow(SLOW_DURATION);
     if (type == BULLET_BUTTER)
-        target.applySlow(SLOW_DURATION * 2);
+        target.applySlow(SLOW_DURATION * 2, false);
 }
 
 void Bullet::startImpact() {
@@ -207,6 +233,7 @@ int  Bullet::getWidth()   const {
         case BULLET_THORN:   return THORN_WIDTH;
         case BULLET_KERNEL:  return KERNEL_WIDTH;
         case BULLET_BUTTER:  return BUTTER_WIDTH;
+        case BULLET_BALL:    return CATAPULT_ZOMBIE_BALL_WIDTH;
         case BULLET_SNOW_PEA: return SNOWPEABULLET_WIDTH;
         default: return PEABULLET_WIDTH;
     }
@@ -221,6 +248,7 @@ int  Bullet::getHeight()  const {
         case BULLET_THORN:   return THORN_HEIGHT;
         case BULLET_KERNEL:  return KERNEL_HEIGHT;
         case BULLET_BUTTER:  return BUTTER_HEIGHT;
+        case BULLET_BALL:    return CATAPULT_ZOMBIE_BALL_HEIGHT;
         case BULLET_SNOW_PEA: return SNOWPEABULLET_HEIGHT;
         default: return PEABULLET_HEIGHT;
     }
@@ -243,4 +271,23 @@ void Bullet::igniteByTorchwood() {
     projectileFrame = 0;
     projectileAnimTick = 0;
     torchUpgraded = true;
+}
+
+bool Bullet::isAoE() const {
+    return type == BULLET_COB || type == BULLET_MELON || type == BULLET_WINTER_MELON;
+}
+
+static const int COB_AOE_RADIUS   = 48;  // 1.5 tiles: covers 3x3 tile zone
+static const int MELON_AOE_RADIUS  = 20;
+
+int Bullet::getAoeRadius() const {
+    if (type == BULLET_COB) return COB_AOE_RADIUS;
+    if (type == BULLET_MELON || type == BULLET_WINTER_MELON) return MELON_AOE_RADIUS;
+    return 0;
+}
+
+bool Bullet::consumeAoE() {
+    if (aoeApplied) return false;
+    aoeApplied = true;
+    return true;
 }

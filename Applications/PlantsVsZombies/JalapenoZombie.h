@@ -6,12 +6,15 @@
 class JalapenoZombie : public Zombie {
 public:
     static const int JALAPENO_ZOMBIE_HP = 200;
-    static const int SPEED_BONUS = 1;
+    static const int SPEED_BONUS        = 5;   // very fast
+    static const int FIRE_DMG_PER_TICK  = 10;
+    static const int FIRE_DURATION      = 400;
 
     JalapenoZombie(int x, int y, int speedBonus = 0);
 
     int getWidth()  const override;
     int getHeight() const override;
+    bool appliesFireToPlant() const override;
 
 protected:
     const unsigned char* currentWalkFrame(int f) const override;

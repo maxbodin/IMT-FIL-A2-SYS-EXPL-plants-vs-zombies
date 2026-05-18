@@ -22,10 +22,10 @@
 #include <Applications/PlantsVsZombies/Grid.h>
 
 #define BASE_ZOMBIES         2
-#define MAX_ZOMBIES         100   // zombies at MAX_WAVE
-#define MAX_WAVE             20   // waves loop after this
-#define WAVE_PAUSE       12000   // ticks between waves (12 s)
-#define SPAWN_INTERVAL    3000   // ticks between zombie spawns within a wave
+#define WAVE_MAX_ZOMBIES     50   // zombies at MAX_WAVE
+#define MAX_WAVE             30   // waves loop after this
+#define WAVE_PAUSE       15000   // ticks between waves (15 s)
+#define SPAWN_INTERVAL    4500   // ticks between zombie spawns within a wave
 
 /* Wave start text display durations (ticks). */
 #define START_TEXT_DURATION 800   // each text shown for this long
