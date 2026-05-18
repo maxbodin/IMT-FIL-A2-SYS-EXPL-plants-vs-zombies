@@ -2,13 +2,30 @@
 #define WAVE_MANAGER_H
 
 #include <Applications/PlantsVsZombies/Zombie.h>
+#include <Applications/PlantsVsZombies/ConeZombie.h>
+#include <Applications/PlantsVsZombies/BucketheadZombie.h>
+#include <Applications/PlantsVsZombies/DiscoZombie.h>
+#include <Applications/PlantsVsZombies/PogoZombie.h>
+#include <Applications/PlantsVsZombies/FootballZombie.h>
+#include <Applications/PlantsVsZombies/BackupDancerZombie.h>
+#include <Applications/PlantsVsZombies/BalloonZombie.h>
+#include <Applications/PlantsVsZombies/BaseballZombie.h>
+#include <Applications/PlantsVsZombies/CatapultZombie.h>
+#include <Applications/PlantsVsZombies/DiggerZombie.h>
+#include <Applications/PlantsVsZombies/GargantuarZombie.h>
+#include <Applications/PlantsVsZombies/JackInTheBoxZombie.h>
+#include <Applications/PlantsVsZombies/JalapenoZombie.h>
+#include <Applications/PlantsVsZombies/NewspaperZombie.h>
+#include <Applications/PlantsVsZombies/PoleVaultingZombie.h>
+#include <Applications/PlantsVsZombies/ScreenDoorZombie.h>
+#include <Applications/PlantsVsZombies/YetiZombie.h>
 #include <Applications/PlantsVsZombies/Grid.h>
 
 #define BASE_ZOMBIES         2
-#define ZOMBIES_PER_WAVE     3
-#define MAX_WAVE             10   // waves loop after this
-#define WAVE_PAUSE       12000   // ticks between waves (12 s)
-#define SPAWN_INTERVAL    3000   // ticks between zombie spawns within a wave
+#define WAVE_MAX_ZOMBIES     50   // zombies at MAX_WAVE
+#define MAX_WAVE             30   // waves loop after this
+#define WAVE_PAUSE       15000   // ticks between waves (15 s)
+#define SPAWN_INTERVAL    4500   // ticks between zombie spawns within a wave
 
 /* Wave start text display durations (ticks). */
 #define START_TEXT_DURATION 800   // each text shown for this long

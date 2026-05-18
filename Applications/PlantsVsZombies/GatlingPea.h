@@ -1,33 +1,29 @@
 #ifndef GATLING_PEA_H
 #define GATLING_PEA_H
 
-#include <Applications/PlantsVsZombies/Peashooter.h>
+#include <Applications/PlantsVsZombies/ShooterPlant.h>
 
-class GatlingPea : public Peashooter {
+class GatlingPea : public ShooterPlant {
 public:
     static const int COST        = 250;
-    static const int SHOOT_DELAY = 30;  // much faster than peashooter
+    static const int HP          = 300;
+    static const int SHOOT_DELAY = 30;
 
     GatlingPea(int x, int y);
 
-    void update();
-    void render();
+    BulletType getBulletType() const override;
+    PlantType getPlantType() const override;
 
-    bool canShoot() const;
-    void resetCooldown();
-    BulletType getBulletType() const;
-    PlantType getPlantType() const;
+protected:
+    const unsigned char* idleFrame(int f) const override;
+    int idleFrameCount() const override;
+    int spriteWidth() const override;
+    int spriteHeight() const override;
 
-    int getWidth() const override;
-    int getHeight() const override;
-
-private:
-    bool shooting;
-    int shootFrame;
-    int shootAnimTick;
-    static const int SHOOT_ANIM_SPEED = 4;
-    static const int SHOOT_ANIM_HOLD  = 24; // frames to stay in shooting anim
-    int shootHoldTicks;
+    const unsigned char* shootingSprite(int f) const override;
+    int shootingSpriteCount() const override;
+    int shootingSpriteWidth() const override;
+    int shootingSpriteHeight() const override;
 };
 
 #endif

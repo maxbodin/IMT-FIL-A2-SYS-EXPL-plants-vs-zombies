@@ -3,6 +3,8 @@
 
 #define MAX_DMG_INDICATORS 16
 #define DMG_INDICATOR_DURATION 400  // ticks (0.4 s)
+#define DMG_INDICATOR_Y_OFFSET 4    // pixels above zombie for damage text
+#define DMG_INDICATOR_FLOAT_DIVISOR 50  // ticks per pixel float upward
 
 class DmgIndicator {
 public:

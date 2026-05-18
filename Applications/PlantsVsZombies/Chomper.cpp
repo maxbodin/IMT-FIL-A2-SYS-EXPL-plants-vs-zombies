@@ -1,20 +1,17 @@
 #include <Applications/PlantsVsZombies/Chomper.h>
 #include <Applications/PlantsVsZombies/Grid.h>
-#include <Applications/PlantsVsZombies/sprites/plants/chomper_idle_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/chomper_attacking_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/plants/chomper_chewing_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/chomper/chomper_idle_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/chomper/chomper_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/chomper/chomper_chewing_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;
 
 Chomper::Chomper(int x, int y)
-    : Peashooter(x, y), chomperState(CHOMP_IDLE),
+    : Plant(x, y, HP), chomperState(CHOMP_IDLE),
       attackFrame(0), attackAnimTick(0),
       chewFrame(0), chewAnimTick(0), chewEndTick(0)
-{
-    hp    = 300;
-    maxHp = 300;
-}
+{}
 
 void Chomper::update() {
     if (state == DYING) { state = DEAD; return; }
@@ -87,8 +84,6 @@ void Chomper::render() {
     }
 }
 
-bool Chomper::canShoot() const { return false; }
-BulletType Chomper::getBulletType() const { return BULLET_PEASHOOTER; }
 PlantType Chomper::getPlantType() const { return PLANT_CHOMPER; }
 
 ChomperState Chomper::getChomperState() const { return chomperState; }
@@ -102,5 +97,7 @@ void Chomper::startAttack() {
 
 bool Chomper::isChewing() const { return chomperState == CHOMP_CHEWING; }
 
-int Chomper::getWidth() const { return CHOMPER_IDLE_WIDTH; }
-int Chomper::getHeight() const { return CHOMPER_IDLE_HEIGHT; }
+const unsigned char* Chomper::idleFrame(int f) const { return chomper_idle_frames[f]; }
+int Chomper::idleFrameCount() const { return CHOMPER_IDLE_FRAMES; }
+int Chomper::spriteWidth() const { return CHOMPER_IDLE_WIDTH; }
+int Chomper::spriteHeight() const { return CHOMPER_IDLE_HEIGHT; }

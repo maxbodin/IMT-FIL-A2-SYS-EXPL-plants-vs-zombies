@@ -1,6 +1,7 @@
 #include <Applications/PlantsVsZombies/Jalapeno.h>
-#include <Applications/PlantsVsZombies/sprites/plants/jalapeno_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/jalapeno_fire_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/jalapeno/jalapeno_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/plants/jalapeno/jalapeno_attacking_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/jalapeno/jalapeno_fire_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;
@@ -12,12 +13,10 @@ static unsigned int jal_lcg() {
 }
 
 Jalapeno::Jalapeno(int x, int y)
-    : Peashooter(x, y), onFire(false), fireDone(false),
+    : Plant(x, y, HP), attacking(false), onFire(false), fireDone(false),
+      attackStartTick(0), attackFrame(0), attackAnimTick(0),
       fireStartTick(0), fireFrame(0), fireAnimTick(0)
-{
-    hp    = 100;
-    maxHp = 100;
-}
+{}
 
 void Jalapeno::update() {
     if (state == DYING) { state = DEAD; return; }
@@ -29,9 +28,22 @@ void Jalapeno::update() {
             state = DYING;
             return;
         }
-        if (++fireAnimTick >= 8) {
+        if (++fireAnimTick >= FIRE_ANIM_SPEED) {
             fireAnimTick = 0;
             fireFrame = (fireFrame + 1) % JALAPENO_FIRE_FRAMES;
+        }
+    } else if (attacking) {
+        if (compt - attackStartTick >= ATTACK_DURATION) {
+            attacking = false;
+            onFire = true;
+            fireStartTick = compt;
+            fireFrame = 0;
+            fireAnimTick = 0;
+            return;
+        }
+        if (++attackAnimTick >= FIRE_ANIM_SPEED) {
+            attackAnimTick = 0;
+            attackFrame = (attackFrame + 1) % JALAPENO_ATTACKING_FRAMES;
         }
     } else {
         if (++animTick >= ANIM_SPEED) {
@@ -47,6 +59,10 @@ void Jalapeno::render() {
         draw_sprite(jalapeno_fire_frames[fireFrame],
                     JALAPENO_FIRE_WIDTH, JALAPENO_FIRE_HEIGHT,
                     x, y + JALAPENO_HEIGHT - JALAPENO_FIRE_HEIGHT);
+    } else if (attacking) {
+        draw_sprite(jalapeno_attacking_frames[attackFrame],
+                    JALAPENO_ATTACKING_WIDTH, JALAPENO_ATTACKING_HEIGHT,
+                    x, y + JALAPENO_HEIGHT - JALAPENO_ATTACKING_HEIGHT);
     } else {
         draw_sprite(jalapeno_frames[frame],
                     JALAPENO_WIDTH, JALAPENO_HEIGHT, x, y);
@@ -55,11 +71,11 @@ void Jalapeno::render() {
 }
 
 void Jalapeno::ignite() {
-    if (!onFire && state != DEAD && state != DYING) {
-        onFire = true;
-        fireStartTick = compt;
-        fireFrame = 0;
-        fireAnimTick = 0;
+    if (!attacking && !onFire && state != DEAD && state != DYING) {
+        attacking = true;
+        attackStartTick = compt;
+        attackFrame = 0;
+        attackAnimTick = 0;
     }
 }
 
@@ -70,14 +86,12 @@ int Jalapeno::getFireDamage() {
 
 int Jalapeno::getFireEffectDuration() {
     jal_rng ^= (unsigned int)compt;
-    return 800 + (int)(jal_lcg() % 1201); // 800-2000 ticks
+    return FIRE_EFFECT_MIN + (int)(jal_lcg() % (FIRE_EFFECT_MAX - FIRE_EFFECT_MIN + 1));
 }
 
-bool Jalapeno::canShoot()       const { return false; }
-BulletType Jalapeno::getBulletType() const { return BULLET_PEASHOOTER; }
 PlantType Jalapeno::getPlantType() const { return PLANT_JALAPENO; }
-bool Jalapeno::hasSunReady()    const { return false; }
-void Jalapeno::resetSunTimer()        {}
 
-int Jalapeno::getWidth()  const { return JALAPENO_WIDTH; }
-int Jalapeno::getHeight() const { return JALAPENO_HEIGHT; }
+const unsigned char* Jalapeno::idleFrame(int f) const { return jalapeno_frames[f]; }
+int Jalapeno::idleFrameCount() const { return JALAPENO_FRAMES; }
+int Jalapeno::spriteWidth() const { return JALAPENO_WIDTH; }
+int Jalapeno::spriteHeight() const { return JALAPENO_HEIGHT; }

@@ -1,5 +1,6 @@
 #include <Applications/PlantsVsZombies/WaveManager.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/zombie_walk_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/cone/cone_zombie_walk_cone_full_sprite.h>
 #include <Applications/PlantsVsZombies/sprites/ui/start_text_sprite.h>
 #include <vga/vga.h>
 
@@ -26,16 +27,21 @@ void WaveManager::reset() {
     wavePendingClear = false;
 }
 
-/* Integer log2 approximation */
-static int ilog2(int v) {
-    int r = 0;
-    while (v > 1) { v >>= 1; r++; }
-    return r;
-}
-
 int WaveManager::zombiesForWave(int w) const {
-    // Logarithmic scaling: grows fast early, plateaus later
-    return BASE_ZOMBIES + ilog2(w) * ZOMBIES_PER_WAVE;
+    // Sub-linear (sqrt-ish) scaling for gradual difficulty ramp
+    // Approximation: base + range * isqrt(w-1) / isqrt(MAX_WAVE-1)
+    if (w <= 1) return BASE_ZOMBIES;
+    if (w >= MAX_WAVE) return WAVE_MAX_ZOMBIES;
+    int range = WAVE_MAX_ZOMBIES - BASE_ZOMBIES;
+    // Integer sqrt via iterative approximation
+    int n = w - 1;
+    int maxN = MAX_WAVE - 1;
+    // Scale n to 0..100 range for precision, then sqrt
+    int scaled = n * 100 / maxN; // 0..100
+    // Integer sqrt of scaled (0..10)
+    int s = 0;
+    while ((s + 1) * (s + 1) <= scaled) s++;
+    return BASE_ZOMBIES + range * s / 10;
 }
 
 int WaveManager::randomLane() {
@@ -69,9 +75,69 @@ Zombie* WaveManager::update() {
     if (compt < nextSpawnTick) return 0;
 
     int lane = randomLane();
-    // Align zombie feet (bottom of sprite) with the middle of the tile lane
-    int zy   = Grid::OFFSET_Y + lane * Grid::TILE_SIZE + Grid::TILE_SIZE / 2 - ZOMBIE_WALK_HEIGHT;
-    Zombie* z = new Zombie(320 - ZOMBIE_WALK_WIDTH, zy);
+
+    /* Speed bonus: +1 per wave, capped by Zombie::MIN_ANIM_SPEED internally */
+    int speedBonus = wave - 1;
+
+    int laneCenter = Grid::OFFSET_Y + lane * Grid::TILE_SIZE + Grid::TILE_SIZE / 2;
+    int zx = 320 - BASIC_ZOMBIE_WALK_FULL_WIDTH;
+
+    /* Spawn type depends on wave progression:
+       Wave 1   : basic only
+       Wave 2+  : cone zombies (~15%)
+       Wave 2+  : buckethead zombies (~8%)
+       Wave 2+  : screendoor zombies (~7%)
+       Wave 3+  : disco zombies (~6%)
+       Wave 3+  : baseball zombies (~6%)
+       Wave 3+  : newspaper zombies (~6%)
+       Wave 3+  : jalapeno zombies (~4%)
+       Wave 3+  : polevaulting zombies (~4%)
+       Wave 4+  : pogo zombies (~5%)
+       Wave 4+  : balloon zombies (~5%)
+       Wave 4+  : jackinthebox zombies (~4%)
+       Wave 5+  : football zombies (~4%)
+       Wave 5+  : catapult zombies (~3%)
+       Wave 6+  : digger zombies (~4%)
+       Wave 7+  : gargantuar zombies (~2%)
+       Wave 8+  : yeti zombies (~1%) */
+    int roll = wave_lcg() % 100;
+    Zombie* z;
+
+    if (wave >= 8 && roll < 1) {
+        z = new YetiZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 7 && roll < 3) {
+        z = new GargantuarZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 6 && roll < 7) {
+        z = new DiggerZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 5 && roll < 10) {
+        z = new CatapultZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 5 && roll < 14) {
+        z = new FootballZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 4 && roll < 18) {
+        z = new JackInTheBoxZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 4 && roll < 23) {
+        z = new BalloonZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 4 && roll < 28) {
+        z = new PogoZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 3 && roll < 32) {
+        z = new PoleVaultingZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 3 && roll < 36) {
+        z = new JalapenoZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 3 && roll < 42) {
+        z = new NewspaperZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 3 && roll < 48) {
+        z = new BaseballZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 3 && roll < 54) {
+        z = new DiscoZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 2 && roll < 61) {
+        z = new ScreenDoorZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 2 && roll < 69) {
+        z = new BucketheadZombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    } else if (wave >= 2 && roll < 84) {
+        z = new ConeZombie(320 - CONE_ZOMBIE_WALK_CONE_FULL_WIDTH, laneCenter - CONE_ZOMBIE_WALK_CONE_FULL_HEIGHT, speedBonus);
+    } else {
+        z = new Zombie(zx, laneCenter - BASIC_ZOMBIE_WALK_FULL_HEIGHT, speedBonus);
+    }
 
     remaining--;
     nextSpawnTick = compt + SPAWN_INTERVAL;

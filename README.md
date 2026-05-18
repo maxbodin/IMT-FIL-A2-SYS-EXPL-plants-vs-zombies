@@ -1,4 +1,29 @@
-# Plants vs Zombies, Sextant OS
+<div style="page-break-after: always; text-align: center; padding-top: 60px;">
+
+<img src="IMT_Atlantique.svg.png" alt="IMT Atlantique" width="320" />
+
+<br/><br/><br/>
+
+<img src="assets/sprites/sources/ui/pvz_titlescreen-title.png" alt="Plants vs Zombies" width="500" />
+
+<br/><br/><br/>
+
+<h1 style="border: none; font-size: 28px;">Plants vs Zombies - Sextant OS</h1>
+
+<h3 style="font-weight: normal; color: #555;">Projet Systèmes d'Exploitation</h3>
+
+<h3 style="font-weight: normal; color: #555;">FIL-A2-Sys-expl</h3>
+
+<br/>
+
+<p style="font-size: 16px;"><strong>Auteurs :</strong> Nathan Marie - Mathilde Burgevin - Maxime Bodin</p>
+
+<p style="font-size: 14px; color: #777;">FIL A2</p>
+
+</div>
+
+# Plants vs Zombies - Sextant OS
+**Auteurs : Nathan Marie - Mathilde Burgevin - Maxime Bodin**
 
 ## 1. Introduction
 
@@ -12,14 +37,16 @@ Ce contexte impose des contraintes fortes : gestion manuelle de la mémoire, abs
 
 Le jeu reprend les mécaniques classiques de Plants vs Zombies, adaptées à un affichage **VGA mode 13h** (320×200 pixels, 256 couleurs) :
 
-- **8 types de plantes** : Peashooter, Snow Peashooter, Sunflower, Jalapeno, Potato Mine, Wall-Nut, Chomper, Gatling Pea, chacune avec des comportements distincts (tir, ralentissement, explosion, absorption de dégâts, etc.)
-- **Système de vagues** progressif avec difficulté croissante (scaling logarithmique du nombre de zombies)
-- **Deux joueurs simultanés** avec curseurs indépendants et files de plantes séparées
-- **Économie de soleils** : gain automatique périodique + collecte des soleils produits par les Sunflowers
+- **24 types de plantes** aux comportements variés : tir (Peashooter, Repeater, Gatling Pea, Threepeater), ralentissement (Snow Peashooter, Winter Melon), explosion (Cherry Bomb, Jalapeno, Potato Mine), défense (Wall-Nut, Garlic), support (Sunflower, Twin Sunflower, Marigold), bombardement (Cabbage-pult, Kernel-pult, Melon-pult, Cob Cannon), utilitaires (Blover, Squash, Chomper, Cactus, Torchwood, Split Pea)
+- **16 types de zombies** avec comportements spéciaux : basique, Conehead, Buckethead, Screen Door, Football (rapide + résistant), Disco (invoque 4 Backup Dancers), Balloon (vol), Pogo (saute par-dessus les plantes), Digger (tunnel), Pole Vaulting (saut), Newspaper (accélère), Jack-in-the-Box (explosion), Catapult (tir à distance), Gargantuar (écrase), Yeti (rare), Jalapeno Zombie (feu)
+- **Système de vagues** progressif (20 vagues en boucle) avec scaling du nombre de zombies
+- **Deux joueurs simultanés** avec curseurs indépendants et files de plantes séparées (3 slots, remplissage aléatoire toutes les 2–5 s)
+- **Économie de soleils** : gain automatique de 25 soleils toutes les 5 s + collecte des soleils produits par les Sunflowers
 - **Système de vies** (3 cœurs) avec écran de Game Over et possibilité de redémarrage
-- **HUD complet** : compteur de soleils, vagues, FPS, timer, file de plantes avec coûts, indicateurs de dégâts
-- **Sprites animés** multi-frames pour toutes les entités (plantes, zombies, projectiles, soleils)
-- **Object pooling** pour les projectiles et indicateurs de dégâts, évitant la fragmentation mémoire
+- **HUD complet** : compteur de soleils, vagues, FPS, timer, file de plantes avec coûts, indicateurs de dégâts flottants
+- **Sprites animés** multi-frames pour toutes les entités (plantes, zombies, projectiles, soleils) avec variantes de dégâts (armless, headless, etc.)
+- **Object pooling** pour les projectiles (90 slots) et indicateurs de dégâts (16 slots), évitant la fragmentation mémoire
+- **Centrage automatique** des sprites sur les tiles (32×32) quelle que soit leur taille réelle
 
 ---
 
@@ -43,17 +70,23 @@ Le jeu reprend les mécaniques classiques de Plants vs Zombies, adaptées à un 
 │   └── PlantsVsZombies/        # Code du jeu
 │       ├── PlantsVsZombies.cpp #   Classe principale : boucles logique/rendu, gestion du jeu
 │       ├── Entity.cpp/h        #   Classe de base des entités (position, HP, état)
+│       ├── Plant.cpp/h         #   Base des plantes (animation, render centré sur tile)
+│       ├── ShooterPlant.cpp/h  #   Base des plantes tireuses (cooldown, animation tir)
 │       ├── Peashooter.cpp/h    #   Plante de base (tir, cooldown, animation)
-│       ├── Zombie.cpp/h        #   Zombie (déplacement, attaque, slow, feu)
-│       ├── Bullet.cpp/h        #   Projectile (déplacement, impact, types)
+│       ├── Zombie.cpp/h        #   Zombie de base (déplacement, attaque, slow, feu, variantes sprite)
+│       ├── Bullet.cpp/h        #   Projectile (déplacement, impact, 10 types)
 │       ├── ObjectPool.h        #   Pool générique thread-safe (Spinlock)
-│       ├── WaveManager.cpp/h   #   Gestion des vagues (spawn, difficulté, texte)
+│       ├── WaveManager.cpp/h   #   Gestion des vagues (spawn progressif, 16 types de zombies)
 │       ├── PlantQueue.cpp/h    #   File de plantes par joueur (producteur/consommateur)
 │       ├── Grid.cpp/h          #   Grille 9×5 cases (placement, conversion pixel↔tile)
 │       ├── Sun.cpp/h           #   Soleil collectible (spawn, durée de vie, valeur)
-│       ├── LivesSystem.cpp/h   #   Système de vies
+│       ├── LivesSystem.cpp/h   #   Système de vies (3 cœurs)
 │       ├── MainMenu.cpp/h      #   Écran titre
 │       └── sprites/            #   Données sprites (tableaux C générés depuis PNG)
+│           ├── plants/         #     24 plantes (idle + variantes damaged/attacking)
+│           ├── zombies/        #     16 types (walk/fight/death x variantes dégâts)
+│           ├── objects/        #     Projectiles, impacts, feu, soleils
+│           └── ui/             #     Background, tiles, textes start
 └── build/                      # Artefacts : sextant.elf, grub.iso
 ```
 
@@ -238,11 +271,12 @@ Sans cette précaution, si `tryP()` tient le spinlock interne et qu'une IRQ clav
 
 Le `WaveManager` contrôle le rythme du jeu avec un système de vagues progressif :
 
-- **Scaling logarithmique** : le nombre de zombies par vague suit `BASE_ZOMBIES + log2(wave) × ZOMBIES_PER_WAVE`, offrant une montée en difficulté rapide au début qui se stabilise ensuite.
+- **Scaling** : le nombre de zombies par vague suit une progression en racine carrée de `BASE_ZOMBIES` (2) à `WAVE_MAX_ZOMBIES` (30) sur 20 vagues. Cette courbe offre une difficulté qui croît rapidement au début puis se stabilise.
+- **16 types de zombies** : l'apparition des types est conditionnée par le numéro de vague (basique dès la vague 1, Cone/Buckethead/Screen Door dès la vague 2, Disco/Baseball/Newspaper dès la vague 3, Pogo/Balloon dès la vague 4, Football/Catapult dès la vague 5, Digger dès la 6, Gargantuar dès la 7, Yeti dès la 8).
 - **Spawn espacé** : les zombies d'une vague apparaissent avec un intervalle de **3 secondes** (`SPAWN_INTERVAL = 3000 ticks`).
 - **Pause inter-vagues** : **12 secondes** (`WAVE_PAUSE`) entre deux vagues, pendant lesquelles le jeu attend que tous les zombies soient éliminés (`wavePendingClear`).
 - **Texte d'annonce** : séquence « Wave N → Ready → Set → Plant! » affichée pendant 3.2 secondes avant chaque vague, durant laquelle la logique de jeu est mise en pause et les inputs bloqués.
-- **Boucle infinie** : après la vague 10, le cycle reprend avec les mêmes paramètres de difficulté.
+- **Boucle infinie** : après la vague 20, le cycle reprend avec les mêmes paramètres de difficulté.
 
 Le placement aléatoire des zombies sur les 5 lignes utilise un **LCG** (Linear Congruential Generator) dont la graine est perturbée par le compteur de ticks `compt`, assurant une variance suffisante entre les parties.
 
@@ -259,8 +293,8 @@ Les événements clavier transitent via la `KeyboardQueue` (ring buffer IRQ → 
 
 Chaque entité hérite de la classe `Entity` qui fournit un système de HP générique :
 
-- **Plantes** : HP variables selon le type (300 HP pour un Peashooter, plus pour un Wall-Nut). Barre de vie rendue au-dessus du sprite via `renderHpBar()` (vert → rouge proportionnel).
-- **Zombies** : 60 HP de base. Subissent des dégâts des projectiles (avec indicateur `-N` flottant via le `DmgIndicator` pool). Effets de status : ralentissement (Snow Pea), feu (Jalapeno).
+- **Plantes** : HP variables selon le type (300 HP pour un Peashooter, 4000 HP pour un Wall-Nut, 300 HP pour un Blover). Barre de vie rendue au-dessus du sprite via `renderHpBar()` (vert → rouge proportionnel). Sprites centrés sur la tile via un offset calculé à partir de `Grid::TILE_SIZE`.
+- **Zombies** : 150 HP de base (Basique), jusqu'à 3000 HP (Gargantuar). Variantes de sprites par niveau de dégâts (full → no_arm → no_head_no_arm) avec dimensions adaptatives. Effets de status : ralentissement (Snow Pea), feu (Jalapeno), push-back (Blover).
 - **Joueur** : 3 vies (cœurs pixel-art dans le HUD). Un zombie atteignant le bord gauche de l'écran retire une vie. À 0 : écran Game Over.
 
 ### 3.6 Object Pooling
@@ -305,17 +339,23 @@ Ce projet démontre qu'il est possible d'implémenter un jeu vidéo complet et j
 
 Les choix techniques, ordonnancement coopératif Round-Robin, sémaphore producteur/consommateur pour la synchronisation logique/rendu, spinlocks atomiques pour les structures partagées, et object pooling pour les allocations fréquentes, répondent chacun à un problème concret identifié lors du développement. Le modèle à deux threads (logique + rendu) avec signalisation par sémaphore offre une séparation claire des responsabilités tout en garantissant une cadence stable de ~62 FPS.
 
-Le mode VGA 13h, bien que limité en résolution (320×200), s'est révélé adapté au genre tower-defense : la grille 9×5 cases de 32 pixels offre un espace de jeu lisible, et la palette de 256 couleurs permet des sprites expressifs. Le double buffering élimine le tearing sans nécessiter de mécanisme complexe de synchronisation verticale.
+Le mode VGA 13h, bien que limité en résolution (320×200), s'est révélé adapté au genre tower-defense : la grille 9×5 cases de 32 pixels offre un espace de jeu lisible, et la palette de 256 couleurs permet des sprites expressifs avec des variantes de dégâts progressifs. Le double buffering élimine le tearing sans nécessiter de mécanisme complexe de synchronisation verticale.
 
-Le support de deux joueurs simultanés, le système de vagues progressif, les 8 types de plantes aux comportements variés, et les indicateurs visuels (barres de vie, dégâts flottants, animations multi-frames) font de ce projet une application non triviale qui exploite l'ensemble des concepts étudiés en cours : interruptions, ordonnancement, synchronisation, et gestion mémoire.
+Le support de deux joueurs simultanés, le système de 20 vagues à difficulté croissante, les 24 types de plantes aux comportements variés, les 16 types de zombies avec sprites multi-variantes, et les indicateurs visuels (barres de vie, dégâts flottants, animations multi-frames) font de ce projet une application non triviale qui exploite l'ensemble des concepts étudiés en cours : interruptions, ordonnancement, synchronisation, et gestion mémoire.
 
 ---
 
-### Génerer un sprite
+### Générer un sprite
 ```bash
-python3 vga/sprite.py assets/sprites/sources/peashooter.png -p vga/atari-8-bit-family-gtia.pal
+python3 vga/sprite.py <source_png_dir> -p Applications/PlantsVsZombies/sprites/shared_palette.cpp -n <nom_sprite> -o <output_dir>
 ```
 
-Adapter uniquement le chemin vers le png (la palette est commune à tous les sprites).
+Exemple pour régénérer un sprite zombie :
+```bash
+python3 vga/sprite.py assets/sprites/sources/zombies/basic/walk_full/ \
+  -p Applications/PlantsVsZombies/sprites/shared_palette.cpp \
+  -n basic_zombie_walk_full \
+  -o Applications/PlantsVsZombies/sprites/zombies/basic/
+```
 
-Les fichiers cpp de chaque sprite sont générés dans `assets/sprites/sources`. Il faut les copy/paste dans `Applications/PlantsVsZombies/sprites`
+Les sprites sont organisés en sous-dossiers : `sprites/plants/`, `sprites/zombies/`, `sprites/objects/`, `sprites/ui/`. Le Makefile détecte automatiquement tous les `*_sprite.cpp` via `$(shell find)`.

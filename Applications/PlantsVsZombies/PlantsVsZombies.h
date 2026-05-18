@@ -3,14 +3,30 @@
 
 #include <Applications/PlantsVsZombies/Grid.h>
 #include <Applications/PlantsVsZombies/MainMenu.h>
+#include <Applications/PlantsVsZombies/Plant.h>
 #include <Applications/PlantsVsZombies/Peashooter.h>
 #include <Applications/PlantsVsZombies/SnowPeashooter.h>
 #include <Applications/PlantsVsZombies/Sunflower.h>
 #include <Applications/PlantsVsZombies/Jalapeno.h>
 #include <Applications/PlantsVsZombies/PotatoMine.h>
 #include <Applications/PlantsVsZombies/WallNut.h>
+#include <Applications/PlantsVsZombies/Blover.h>
+#include <Applications/PlantsVsZombies/CabbagePult.h>
+#include <Applications/PlantsVsZombies/CactusPlant.h>
+#include <Applications/PlantsVsZombies/CherryBomb.h>
+#include <Applications/PlantsVsZombies/CobCannon.h>
+#include <Applications/PlantsVsZombies/Garlic.h>
+#include <Applications/PlantsVsZombies/KernelPult.h>
+#include <Applications/PlantsVsZombies/Marigold.h>
+#include <Applications/PlantsVsZombies/MelonPult.h>
 #include <Applications/PlantsVsZombies/Bullet.h>
 #include <Applications/PlantsVsZombies/Zombie.h>
+#include <Applications/PlantsVsZombies/ConeZombie.h>
+#include <Applications/PlantsVsZombies/DiscoZombie.h>
+#include <Applications/PlantsVsZombies/BackupDancerZombie.h>
+#include <Applications/PlantsVsZombies/BalloonZombie.h>
+#include <Applications/PlantsVsZombies/BaseballZombie.h>
+#include <Applications/PlantsVsZombies/JackInTheBoxZombie.h>
 #include <Applications/PlantsVsZombies/DmgIndicator.h>
 #include <Applications/PlantsVsZombies/ObjectPool.h>
 #include <Applications/PlantsVsZombies/Sun.h>
@@ -26,6 +42,9 @@
 
 #define COLLISION_DISTANCE 5
 #define ZOMBIE_DAMAGE      25
+
+#define LOGIC_TICK_INTERVAL  16   // ticks between logic updates (~62 fps)
+#define FPS_UPDATE_INTERVAL 1000  // ticks between FPS counter updates (1 s)
 
 #define SUN_INITIAL           150
 #define SUN_TICK_INTERVAL    5000  // ticks entre chaque gain automatique (5 s à 1000 Hz)
@@ -51,7 +70,7 @@ public:
 private:
     MainMenu    mainMenu;
     Grid        grid;
-    Peashooter* plants[MAX_PLANTS];
+    Plant*      plants[MAX_PLANTS];
     int         plantCount;
     ObjectPool<Bullet, BULLET_POOL_SIZE>         bulletPool;
     ObjectPool<DmgIndicator, MAX_DMG_INDICATORS> dmgPool;
@@ -101,7 +120,7 @@ private:
     void showGameOver();
     void resetGame();
     void handleInput();
-    void drawCursor(int col, int row, unsigned char color);
+    void drawCursor(int col, int row, unsigned char color, int tileCount = 1);
     bool placePlant(int col, int row, PlantType type);
 };
 

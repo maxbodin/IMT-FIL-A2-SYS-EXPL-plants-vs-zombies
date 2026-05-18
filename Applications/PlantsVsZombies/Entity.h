@@ -19,6 +19,7 @@ public:
     EntityState getState() const;
     int getX() const;
     int getY() const;
+    void setPosition(int nx, int ny);
 
     virtual int getWidth() const;
     virtual int getHeight() const;

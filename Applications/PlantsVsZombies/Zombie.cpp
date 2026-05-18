@@ -1,19 +1,42 @@
 #include <Applications/PlantsVsZombies/Zombie.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/zombie_walk_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/zombies/zombie_fight_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/zombie_fire_sprite.h>
-#include <Applications/PlantsVsZombies/sprites/objects/snowpea_impact_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_walk_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_walk_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_walk_no_head_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_fight_full_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_fight_no_arm_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/zombies/basic/basic_zombie_death_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/zombie_fire/zombie_fire_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/snowpea/snowpea_impact_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;
 
-Zombie::Zombie(int x, int y)
-    : Entity(x, y, HP), cooldown(HIT_DELAY), frame(0), animTick(0), slowTicks(0),
-      fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0) {}
+static int clampSpeed(int bonus) {
+    int s = Zombie::BASE_ANIM_SPEED - bonus;
+    return s < Zombie::MIN_ANIM_SPEED ? Zombie::MIN_ANIM_SPEED : s;
+}
+
+Zombie::Zombie(int x, int y, int speedBonus)
+    : Entity(x, y, HP), animSpeed(clampSpeed(speedBonus)),
+      cooldown(HIT_DELAY), frame(0), animTick(0), slowTicks(0), iceSlow(false),fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0), deathFrame(0), deathAnimTick(0) {}
+
+Zombie::Zombie(int x, int y, int customHp, int speedBonus)
+    : Entity(x, y, customHp), animSpeed(clampSpeed(speedBonus)),
+      cooldown(HIT_DELAY), frame(0), animTick(0), slowTicks(0), iceSlow(false),fireDamage(0), fireEndTick(0), fireNextDmgTick(0), fireFrame(0), fireAnimTick(0), deathFrame(0), deathAnimTick(0) {}
 
 void Zombie::update() {
     if (state == DYING) {
-        state = DEAD;
+        if (hasDeathAnimation()) {
+            if (++deathAnimTick >= DEATH_ANIM_SPEED) {
+                deathAnimTick = 0;
+                deathFrame++;
+                if (deathFrame >= currentDeathFrameCount()) {
+                    state = DEAD;
+                }
+            }
+        } else {
+            state = DEAD;
+        }
         return;
     }
 
@@ -28,52 +51,70 @@ void Zombie::update() {
     if (fireEndTick > 0 && compt < fireEndTick) {
         if (compt >= fireNextDmgTick) {
             takeDamage(fireDamage);
-            fireNextDmgTick = compt + 100; // damage tick every 100 ticks
+            fireNextDmgTick = compt + FIRE_TICK_INTERVAL;
         }
-        if (++fireAnimTick >= 8) {
+        if (++fireAnimTick >= FIRE_ANIM_SPEED) {
             fireAnimTick = 0;
             fireFrame = (fireFrame + 1) % ZOMBIE_FIRE_FRAMES;
         }
     }
 
-    int speed = (slowTicks > 0) ? ANIM_SPEED * 2 : ANIM_SPEED;
+    int speed = (slowTicks > 0) ? animSpeed * 2 : animSpeed;
+
+    onUpdate();
 
     if (state == BLOCKED) {
         if (++animTick >= speed) {
             animTick = 0;
-            frame = (frame + 1) % ZOMBIE_FIGHT_FRAMES;
+            frame = (frame + 1) % currentFightFrameCount();
         }
     } else if (++animTick >= speed) {
         animTick = 0;
-        frame = (frame + 1) % ZOMBIE_WALK_FRAMES;
+        frame = (frame + 1) % currentWalkFrameCount();
         if (frame == 1 || frame == 5) {
-            x -= 5; 
+            x -= WALK_STEP; 
         }
     }
 }
 
 void Zombie::render() {
     if (state == DEAD) return;
-    if (state == BLOCKED) {
-        draw_sprite(zombie_fight_frames[frame], ZOMBIE_FIGHT_WIDTH, ZOMBIE_FIGHT_HEIGHT, x, y);
-    } else {
-        draw_sprite(zombie_walk_frames[frame], ZOMBIE_WALK_WIDTH, ZOMBIE_WALK_HEIGHT, x, y);
+
+    /* Death animation rendering — bottom-aligned with walk sprite */
+    if (state == DYING && hasDeathAnimation()) {
+        int df = deathFrame < currentDeathFrameCount() ? deathFrame : currentDeathFrameCount() - 1;
+        int dw = currentDeathWidth();
+        int dh = currentDeathHeight();
+        int ww = getWidth();
+        int wh = getHeight();
+        int dx = x + (ww - dw) / 2;  // center horizontally on walk sprite
+        int dy = y + wh - dh;         // bottom-align with walk sprite
+        draw_sprite(currentDeathFrame(df), dw, dh, dx, dy);
+        return;
     }
-    renderHpBar(ZOMBIE_WALK_WIDTH / 2, ZOMBIE_WALK_HEIGHT);
+
+    int w = getWidth();
+    int h = getHeight();
+    if (state == BLOCKED) {
+        draw_sprite(currentFightFrame(frame), currentFightWidth(), currentFightHeight(), x, y);
+    } else {
+        draw_sprite(currentWalkFrame(frame), currentWalkWidth(), currentWalkHeight(), x, y);
+    }
+    renderHpBar(w / 2, h);
 
     /* Fire overlay */
     if (fireEndTick > 0 && compt < fireEndTick) {
         draw_sprite(zombie_fire_frames[fireFrame],
                     ZOMBIE_FIRE_WIDTH, ZOMBIE_FIRE_HEIGHT,
-                    x + (ZOMBIE_WALK_WIDTH - ZOMBIE_FIRE_WIDTH) / 2, y);
+                    x + (w - ZOMBIE_FIRE_WIDTH) / 2, y);
     }
 
-    /* Snow/slow overlay */
-    if (slowTicks > 0) {
+    /* Snow/slow overlay — only for ice-based slows */
+    if (slowTicks > 0 && iceSlow) {
         draw_sprite(snowpea_impact_frames[SNOWPEA_IMPACT_FRAMES - 1],
                     SNOWPEA_IMPACT_WIDTH, SNOWPEA_IMPACT_HEIGHT,
-                    x + (ZOMBIE_WALK_WIDTH - SNOWPEA_IMPACT_WIDTH) / 2,
-                    y + ZOMBIE_WALK_HEIGHT - SNOWPEA_IMPACT_HEIGHT);
+                    x + (w - SNOWPEA_IMPACT_WIDTH) / 2,
+                    y + h - SNOWPEA_IMPACT_HEIGHT);
     }
 }
 
@@ -81,8 +122,8 @@ bool Zombie::canHit() const {
     return state != DYING && state != DEAD && cooldown == 0;
 }
 
-int Zombie::getWidth()  const { return ZOMBIE_WALK_WIDTH; }
-int Zombie::getHeight() const { return ZOMBIE_WALK_HEIGHT; }
+int Zombie::getWidth()  const { return BASIC_ZOMBIE_WALK_FULL_WIDTH; }
+int Zombie::getHeight() const { return BASIC_ZOMBIE_WALK_FULL_HEIGHT; }
 
 void Zombie::resetCooldown() {
     cooldown = HIT_DELAY;
@@ -100,8 +141,9 @@ bool Zombie::isBlocked() const {
     return state == BLOCKED; 
 }
 
-void Zombie::applySlow(int duration) {
+void Zombie::applySlow(int duration, bool ice) {
     slowTicks = duration;
+    iceSlow = ice;
 }
 
 bool Zombie::isSlowed() const {
@@ -119,3 +161,69 @@ void Zombie::applyFire(int damage, int duration) {
 bool Zombie::isOnFire() const {
     return fireEndTick > 0 && compt < fireEndTick;
 }
+
+bool Zombie::hasPendingSummon() const { return false; }
+void Zombie::consumeSummon() {}
+bool Zombie::canBeBlocked() const { return true; }
+bool Zombie::isFlying() const { return false; }
+bool Zombie::isInvulnerable() const { return false; }
+int Zombie::getAttackDamage() const { return 1; }
+bool Zombie::appliesFireToPlant() const { return false; }
+
+void Zombie::onPlantContact() {}
+bool Zombie::hasPendingExplosion() const { return false; }
+void Zombie::consumeExplosion() {}
+int Zombie::explosionSpawnCount() const { return 0; }
+int Zombie::deathSpawnCount() const { return 0; }
+
+const unsigned char* Zombie::currentWalkFrame(int f)  const {
+    if (hp > 100) return basic_zombie_walk_full_frames[f];
+    if (hp > 50)  return basic_zombie_walk_no_arm_frames[f];
+    if (hp > 25)  return basic_zombie_walk_no_arm_frames[f];
+    return basic_zombie_walk_no_head_no_arm_frames[f % BASIC_ZOMBIE_WALK_NO_HEAD_NO_ARM_FRAMES];
+}
+const unsigned char* Zombie::currentFightFrame(int f) const {
+    if (hp > 100) return basic_zombie_fight_full_frames[f];
+    if (hp > 50)  return basic_zombie_fight_no_arm_frames[f];
+    return basic_zombie_fight_no_arm_frames[f];
+}
+int Zombie::currentWalkFrameCount()  const { return BASIC_ZOMBIE_WALK_FULL_FRAMES; }
+int Zombie::currentFightFrameCount() const { return BASIC_ZOMBIE_FIGHT_FULL_FRAMES; }
+int Zombie::currentWalkWidth()  const {
+    if (hp <= 25) return BASIC_ZOMBIE_WALK_NO_HEAD_NO_ARM_WIDTH;
+    if (hp <= 100) return BASIC_ZOMBIE_WALK_NO_ARM_WIDTH;
+    return BASIC_ZOMBIE_WALK_FULL_WIDTH;
+}
+int Zombie::currentWalkHeight() const {
+    if (hp <= 25) return BASIC_ZOMBIE_WALK_NO_HEAD_NO_ARM_HEIGHT;
+    if (hp <= 100) return BASIC_ZOMBIE_WALK_NO_ARM_HEIGHT;
+    return BASIC_ZOMBIE_WALK_FULL_HEIGHT;
+}
+int Zombie::currentFightWidth()  const {
+    if (hp <= 100) return BASIC_ZOMBIE_FIGHT_NO_ARM_WIDTH;
+    return BASIC_ZOMBIE_FIGHT_FULL_WIDTH;
+}
+int Zombie::currentFightHeight() const {
+    if (hp <= 100) return BASIC_ZOMBIE_FIGHT_NO_ARM_HEIGHT;
+    return BASIC_ZOMBIE_FIGHT_FULL_HEIGHT;
+}
+
+const unsigned char* Zombie::currentDeathFrame(int f) const {
+    if (hp <= 100) return basic_zombie_death_frames[f % BASIC_ZOMBIE_DEATH_FRAMES];
+    return basic_zombie_death_frames[f];
+}
+int Zombie::currentDeathFrameCount() const {
+    if (hp <= 100) return BASIC_ZOMBIE_DEATH_FRAMES;
+    return BASIC_ZOMBIE_DEATH_FRAMES;
+}
+int Zombie::currentDeathWidth() const {
+    if (hp <= 100) return BASIC_ZOMBIE_DEATH_WIDTH;
+    return BASIC_ZOMBIE_DEATH_WIDTH;
+}
+int Zombie::currentDeathHeight() const {
+    if (hp <= 100) return BASIC_ZOMBIE_DEATH_HEIGHT;
+    return BASIC_ZOMBIE_DEATH_HEIGHT;
+}
+bool Zombie::hasDeathAnimation() const { return true; }
+
+void Zombie::onUpdate() {}

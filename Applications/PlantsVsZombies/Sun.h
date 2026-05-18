@@ -23,7 +23,8 @@ public:
     int getValue() const;
 
 private:
-    static const int ANIM_SPEED = 20;
+    static const int ANIM_SPEED       = 20;
+    static const int ALPHA_COLOR_IDX  = 179;  // palette index for transparency
     int x, y;
     int tileCol, tileRow;
     int value;

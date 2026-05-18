@@ -1,0 +1,10 @@
+#ifndef MELON_IMPACT_ANIM_H
+#define MELON_IMPACT_ANIM_H
+
+#define MELON_IMPACT_WIDTH  64
+#define MELON_IMPACT_HEIGHT 48
+#define MELON_IMPACT_FRAMES 6
+
+extern unsigned char melon_impact_frames[MELON_IMPACT_FRAMES][MELON_IMPACT_WIDTH*MELON_IMPACT_HEIGHT];
+
+#endif

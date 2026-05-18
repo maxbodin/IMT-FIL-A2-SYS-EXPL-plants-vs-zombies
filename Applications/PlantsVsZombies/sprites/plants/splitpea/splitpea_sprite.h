@@ -1,0 +1,10 @@
+#ifndef SPLITPEA_ANIM_H
+#define SPLITPEA_ANIM_H
+
+#define SPLITPEA_WIDTH  34
+#define SPLITPEA_HEIGHT 30
+#define SPLITPEA_FRAMES 8
+
+extern unsigned char splitpea_frames[SPLITPEA_FRAMES][SPLITPEA_WIDTH*SPLITPEA_HEIGHT];
+
+#endif

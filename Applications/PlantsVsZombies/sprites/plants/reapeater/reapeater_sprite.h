@@ -1,0 +1,10 @@
+#ifndef REAPEATER_ANIM_H
+#define REAPEATER_ANIM_H
+
+#define REAPEATER_WIDTH  27
+#define REAPEATER_HEIGHT 30
+#define REAPEATER_FRAMES 5
+
+extern unsigned char reapeater_frames[REAPEATER_FRAMES][REAPEATER_WIDTH*REAPEATER_HEIGHT];
+
+#endif

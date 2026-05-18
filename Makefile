@@ -35,13 +35,16 @@ MV = mv -f
 
 KERNEL_OBJ   = sextant.elf
 
-OBJECTSNAMES= main multiboot fonctionsES irq_wrappers i8259 idt irq Ecran Clavier timer handler_tic handler_clavier memoire vga shared_palette peashooter_sprite peashooter_shooting_sprite snow_peashooter_sprite snow_peashooter_shooting_sprite sunflower_sprite jalapeno_sprite potato_mine_sprite wallnut_sprite wallnut_damaged_sprite wallnut_very_damaged_sprite chomper_idle_sprite chomper_attacking_sprite chomper_chewing_sprite gatlingpea_idle_sprite gatlingpea_shooting_sprite peabullet_sprite snowpeabullet_sprite peabullet_impact_sprite snowpea_impact_sprite jalapeno_fire_sprite potato_mine_explosion_sprite sun_big_sprite sun_small_sprite zombie_fire_sprite grass_tile_sprite background_sprite game_over_sprite start_text_sprite titlescreen_bg_sprite titlescreen_title_sprite titlescreen_dirt_sprite titlescreen_grass_sprite zombie_walk_sprite zombie_fight_sprite Entity Bullet DmgIndicator Peashooter SnowPeashooter Sunflower Jalapeno PotatoMine WallNut Chomper GatlingPea Sun Grid Tile MainMenu PlantsVsZombies PlantQueue WaveManager Zombie Spinlock Semaphore KeyboardQueue cpu_context cpu_context_switch sched thread Threads
+# Auto-discover all sprite source files
+SPRITE_NAMES=$(patsubst %.cpp,%,$(notdir $(shell find Applications/PlantsVsZombies/sprites -name '*_sprite.cpp')))
+
+OBJECTSNAMES= main multiboot fonctionsES irq_wrappers i8259 idt irq Ecran Clavier timer handler_tic handler_clavier memoire vga shared_palette $(SPRITE_NAMES) Entity Plant ShooterPlant Bullet DmgIndicator Peashooter SnowPeashooter Sunflower Jalapeno PotatoMine WallNut Chomper GatlingPea Blover CabbagePult CactusPlant CherryBomb CobCannon Garlic KernelPult Marigold MelonPult Repeater SplitPea Squash Threepeater Torchwood TwinSunflower WinterMelon Sun Grid Tile MainMenu PlantsVsZombies PlantQueue WaveManager Zombie DiscoZombie ConeZombie BucketheadZombie PogoZombie FootballZombie BackupDancerZombie BalloonZombie BaseballZombie CatapultZombie DiggerZombie GargantuarZombie JackInTheBoxZombie JalapenoZombie NewspaperZombie PoleVaultingZombie ScreenDoorZombie YetiZombie Spinlock Semaphore KeyboardQueue cpu_context cpu_context_switch sched thread Threads
 
 
 OBJECTS=$(patsubst %,build/all-o/%.o,$(OBJECTSNAMES))					  		
 
-#variable pour demander a make de chercher les dependances dans n'importe quel repertoire jusqu'à 3 rep de profondeur :
-VPATH=$(wildcard *):$(wildcard */*):$(wildcard */*/*):$(wildcard */*/*/*)
+#variable pour demander a make de chercher les dependances dans n'importe quel repertoire jusqu'à 4 rep de profondeur :
+VPATH=$(wildcard *):$(wildcard */*):$(wildcard */*/*):$(wildcard */*/*/*):$(wildcard */*/*/*/*)
 
 # Tous les headers du projet : tout .o doit être recompilé quand un .h change
 # (pas de tracking transitive des #include, donc on reconstruit tout par sécurité)

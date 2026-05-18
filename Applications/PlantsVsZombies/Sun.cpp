@@ -1,6 +1,6 @@
 #include <Applications/PlantsVsZombies/Sun.h>
 #include <Applications/PlantsVsZombies/Grid.h>
-#include <Applications/PlantsVsZombies/sprites/objects/sun_big_sprite.h>
+#include <Applications/PlantsVsZombies/sprites/objects/sun/sun_big_sprite.h>
 #include <vga/vga.h>
 
 extern volatile int compt;
@@ -51,7 +51,7 @@ void Sun::update() {
 
 void Sun::render() {
     if (!active) return;
-    draw_sprite_alpha(sun_big_frames[frame], SUN_BIG_WIDTH, SUN_BIG_HEIGHT, x, y, 179);
+    draw_sprite_alpha(sun_big_frames[frame], SUN_BIG_WIDTH, SUN_BIG_HEIGHT, x, y, ALPHA_COLOR_IDX);
 }
 
 bool Sun::isActive()    const { return active; }
